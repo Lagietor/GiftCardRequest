@@ -108,5 +108,12 @@ class GiftCardRequest extends Module
     ];
     }
 
+    private function getConfigFormValues()
+    {
+        return [
+            self::CONFIG_STATUS => Configuration::get(self::CONFIG_STATUS),
+        ];
+    }
+
 }
 

@@ -48,72 +48,62 @@ class GiftCardRequest extends Module
 
     public function getContent()
     {
-
+        return $this->renderForm();
     }
 
     protected function renderForm()
     {
         $helper = new HelperForm();
 
-        $helper->show_toolbar = false;
-        $helper->table = $this->table;
+        $helper->table = 'giftcardrequest';
         $helper->module = $this;
         $helper->default_form_language = $this->context->language->id;
         $helper->allow_employee_form_lang = Configuration::get(_DB_PREFIX_ . 'BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
 
-        $helper->identifier = $this->identifier;
-        $helper->submit_action = 'submitGiftCardRequestModule';
+        $helper->submit_action = 'giftCardRequestSubmit';
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
             . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
-        $helper->tpl_var = [
-            'field_value' => $this->getConfigFormValues(),
-            'languages' => $this->context->controller->getLanguages(),
-            'id_language' => $this->context->language->id,
+        $helper->tpl_vars = [
+            'fields_value' => [
+                'enableModule' => Tools::getValue('enableModule', 1)//Configuration::get('ENABLE_MODULE'))
+            ],
+            'languages' => $this->context->controller->getLanguages()
         ];
 
-        return $helper->generateForm([$this->getConfigForm()]);
+        return $helper->generateForm([$this->Form()]);
     }
 
-    protected function getConfigForm()
+    protected function form()
     {
         return [
             'form' => [
-                'title' => $this->l('Settings'),
-                'icon' => 'icon_cogs',
-            ],
-            'input' => [
-                [
+                'legend' => [
+                    'title' => $this->l('Configuration'),
+                    'icon' => 'icon-wrench'
+                ],
+                'input' => [
+                    [
                     'type' => 'switch',
-                    'label' => $this->l('Module status'),
-                    'name' => self::CONFIG_STATUS,
-                    'is_bool' => true,
+                    'label' => $this->l('Enable module'),
+                    'name' => 'enableModule',
                     'values' => [
                         [
-                            'id' => 'active_on',
-                            'value' => true,
+                            'id' => 'enableModule1',
+                            'value' => 1,
                             'label' => $this->l('Enabled')
                         ],
                         [
-                            'id' => 'active_off',
-                            'value' => false,
+                            'id' => 'enableModule0',
+                            'value' => 0,
                             'label' => $this->l('Disabled')
                         ]
-                     ],
+                    ]
+                    ]
                 ],
-            ],
-        ],
-        'submit' => [
-            'title' => $this->l('Save'),
-        ],
-    ];
-    }
-
-    private function getConfigFormValues()
-    {
-        return [
-            self::CONFIG_STATUS => Configuration::get(self::CONFIG_STATUS),
+                'submit' => [
+                    'title' => $this->l('Save')
+                ]
+            ]
         ];
     }
-
 }
-

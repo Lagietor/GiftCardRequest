@@ -10,6 +10,10 @@ class GiftCardRequest extends Module
 
     private const CONFIG_STATUS = 'GIFTCARDREQUESTMODULE_STATUS';
     private const CONFIG_STATUS_DEFAULT = 1;
+    private const CONFIG_URL_FIELD = 'GIFTCARDREQUEST_URL_FIELD';
+    private const CONFIG_KEY_FIELD = 'GIFTCARDREQUEST_KEY_FIELD';
+    private const CONFIG_FORM = "GIFTCARDREQUEST_FORM";
+    private const CONFIG_EVENT = "GIFTCARDREQUEST_EVENT";
 
     public function __construct()
     {
@@ -32,9 +36,9 @@ class GiftCardRequest extends Module
         if (!parent::install()) {
             return false;
         }
+        $this->registerHook('actionObjectOrderAddAfter');
 
         Configuration::updateValue(self::CONFIG_STATUS, self::CONFIG_STATUS_DEFAULT);
-        //Configuration::updateValue();
 
         return true;
     }
@@ -63,13 +67,17 @@ class GiftCardRequest extends Module
 
     protected function postProcess(): void
     {
-        if (Configuration::updateValue(self::CONFIG_STATUS, (int)Tools::getValue(self::CONFIG_STATUS))
+        if (
+            Configuration::updateValue(self::CONFIG_STATUS, (int)Tools::getValue(self::CONFIG_STATUS)) &&
+            Configuration::updateValue(self::CONFIG_URL_FIELD, (string)Tools::getValue(self::CONFIG_URL_FIELD)) &&
+            Configuration::updateValue(self::CONFIG_KEY_FIELD, (string)Tools::getValue(self::CONFIG_KEY_FIELD)) &&
+            Configuration::updateValue(self::CONFIG_FORM, (string)Tools::getValue(self::CONFIG_FORM)) &&
+            Configuration::updateValue(self::CONFIG_EVENT, (string)Tools::getValue(self::CONFIG_EVENT))
         ) {
             $this->output .= $this->displayConfirmation('Saved');
         } else {
             $this->output .= $this->displayError('Save has failed');
         }
-
     }
 
     protected function renderForm()
@@ -80,17 +88,20 @@ class GiftCardRequest extends Module
         $helper->module = $this;
         $helper->default_form_language = $this->context->language->id;
         $helper->allow_employee_form_lang = Configuration::get(_DB_PREFIX_ . 'BO_ALLOW_EMPLOYEE_FORM_LANG', 0);
-
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->submit_action = 'giftCardRequestSubmit';
         $helper->currentIndex = $this->context->link->getAdminLink('AdminModules', false)
             . '&configure=' . $this->name . '&tab_module=' . $this->tab . '&module_name=' . $this->name;
         $helper->tpl_vars = [
             'fields_value' => [
-                //'enableModule' => Tools::getValue('enableModule', 1)//Configuration::get('ENABLE_MODULE'))
-                'enableModule' => Tools::getValue('enableModule', true)
+                self::CONFIG_STATUS => Tools::getValue(self::CONFIG_STATUS, true),
+                self::CONFIG_URL_FIELD => Tools::getValue(self::CONFIG_URL_FIELD),
+                self::CONFIG_KEY_FIELD => Tools::getValue(self::CONFIG_KEY_FIELD),
+                self::CONFIG_FORM => Tools::getValue(self::CONFIG_FORM),
+                self::CONFIG_EVENT => Tools::getValue(self::CONFIG_EVENT)
             ],
             'languages' => $this->context->controller->getLanguages(),
-            'id_language' => $this->context->language->id,
+            'id_language' => $this->context->language->id
         ];
 
         return $helper->generateForm([$this->Form()]);
@@ -122,13 +133,68 @@ class GiftCardRequest extends Module
                             'label' => $this->l('Disabled')
                         ]
                     ]
-                    ]
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => self::CONFIG_URL_FIELD,
+                        'label' => $this->l('Adres URL: '),
+                        'required' => true
+                    ],
+                    [
+                        'type' => 'text',
+                        'name' => self::CONFIG_KEY_FIELD,
+                        'label' => $this->l('Klucz: '),
+                    ],
+                    [
+                        'type' => 'select',
+                        'name' => self::CONFIG_FORM,
+                        'label' => $this->l('Format: '),
+                        'options' => [
+                            'query' => [
+                                [
+                                    'id_option' => 1,
+                                    'name' => 'JSON'
+                                ],
+                                [
+                                    'id_option' => 2,
+                                    'name' => 'JDAD'
+                                ],
+                                [
+                                    'id_option' => 3,
+                                    'name' => 'JMOM'
+                                ]
+                            ],
+                            'name' => 'name',
+                            'id' => 'id_option'
+                        ],
+                    ],
+                    [
+                        'type' => 'select',
+                        'label' => $this->l('Zdarzenia: '),
+                        'name' => self::CONFIG_EVENT,
+                        'multiple' => true,
+                        'options' => [
+                            'query' => [
+                                ['key' => '1', 'name' => 'order.create'],
+                                ['key' => '2', 'name' => 'order.paid'],
+                                ['key' => '3', 'name' => 'order.status'],
+                                ['key' => '4', 'name' => 'order.delete']
+                                        ],
+                            'id' => 'key',
+                            'name' => 'name'
+                        ],
+                    ],
                 ],
                 'submit' => [
                     'title' => $this->l('Save')
                 ],
             ],
         ];
+    }
+
+    public function hookActionObjectOrderAddAfter()
+    {
+        //sapnu puas => google.com;
     }
 
     private function getConfigFormValues(): array

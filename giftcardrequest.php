@@ -65,6 +65,21 @@ class GiftCardRequest extends Module
         return $this->output . $this->renderForm();
     }
 
+    public function getHookController($hookName)
+    {
+        require_once(__DIR__ . '/controllers/hooks/' . $hookName . '.php');
+        $controllerName = $hookName . 'Controller';
+        $controller = new $controllerName($this);
+
+        return $controller;
+    }
+
+    public function hookActionObjectOrderAddAfter()
+    {
+        $controller = $this->getHookController('ActionObjectOrderAddAfter');
+        return $controller->run();
+    }
+
     protected function postProcess(): void
     {
         if (
@@ -177,8 +192,6 @@ class GiftCardRequest extends Module
                             'query' => [
                                 ['key' => '1', 'name' => 'order.create'],
                                 ['key' => '2', 'name' => 'order.paid'],
-                                ['key' => '3', 'name' => 'order.status'],
-                                ['key' => '4', 'name' => 'order.delete']
                                         ],
                             'id' => 'key',
                             'name' => 'name'
@@ -192,15 +205,10 @@ class GiftCardRequest extends Module
         ];
     }
 
-    public function hookActionObjectOrderAddAfter()
-    {
-        //sapnu puas => google.com;
-    }
-
     private function getConfigFormValues(): array
     {
         return [
-            self::CONFIG_STATUS => Configuration::get(self::CONFIG_STATUS),
+            self::CONFIG_STATUS => Configuration::get(self::CONFIG_STATUS)
         ];
     }
 }

@@ -37,6 +37,7 @@ class GiftCardRequest extends Module
             return false;
         }
         $this->registerHook('actionObjectOrderAddAfter');
+        $this->registerHook('Header');
 
         Configuration::updateValue(self::CONFIG_STATUS, self::CONFIG_STATUS_DEFAULT);
 
@@ -74,10 +75,19 @@ class GiftCardRequest extends Module
         return $controller;
     }
 
+    public function hookHeader()
+    {
+        ;
+    }
+
     public function hookActionObjectOrderAddAfter()
     {
-        $controller = $this->getHookController('ActionObjectOrderAddAfter');
-        return $controller->run();
+        dump("TEST");
+        die();
+        //dump("TEST");
+        //Tools::d("test");
+        // $controller = $this->getHookController('ActionPaymentConfirmation');
+        // return $controller->run();
     }
 
     protected function postProcess(): void

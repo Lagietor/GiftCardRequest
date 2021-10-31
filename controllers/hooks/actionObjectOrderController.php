@@ -1,6 +1,6 @@
 <?php
 
-class ActionObjectOrder
+class actionPaymentConfirmation
 {
 
     public function __construct($module)
@@ -9,6 +9,6 @@ class ActionObjectOrder
     }
     public function run()
     {
-        Tools::d("test");
+        //Tools::d("test");
     }
 }

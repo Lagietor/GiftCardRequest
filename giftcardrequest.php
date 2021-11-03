@@ -51,7 +51,6 @@ class GiftCardRequest extends Module
         }
 
         Configuration::deleteByName(self::CONFIG_STATUS);
-        //Configuration::deleteByName();
 
         return true;
     }
@@ -75,19 +74,16 @@ class GiftCardRequest extends Module
         return $controller;
     }
 
-    public function hookHeader()
+    public function hookHeader() // hook do testów
     {
-        ;
+        $controller = $this->getHookController('header');
+        return $controller->run();
     }
 
     public function hookActionObjectOrderAddAfter()
     {
-        dump("TEST");
-        die();
-        //dump("TEST");
-        //Tools::d("test");
-        // $controller = $this->getHookController('ActionPaymentConfirmation');
-        // return $controller->run();
+        $controller = $this->getHookController('ActionObjectOrderAddAfter');
+        return $controller->run();
     }
 
     protected function postProcess(): void
@@ -214,7 +210,7 @@ class GiftCardRequest extends Module
             ],
         ];
     }
-
+    //metoda do możliwego wykorzystania w przyszłości
     private function getConfigFormValues(): array
     {
         return [

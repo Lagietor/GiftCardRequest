@@ -1,5 +1,5 @@
 CREATE TABLE ordercreatedata (
-    order_id int PRIMARY AUTO_INCREMENT NOT NULL,
+    order_id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
     user_id int NOT NULL,
     date date NOT NULL,
     status_date date NOT NULL,
@@ -79,8 +79,7 @@ CREATE TABLE ordercreatedata (
     auction.transaction_id int NOT NULL,
     auction.buyer_login text NOT NULL,
     shipping object NOT NULL,
-    shipping.shipp
- _id int NOT NULL,
+    shipping.shipp_id int NOT NULL,
     shipping.name text NOT NULL,
     shipping.description text NOT NULL,
     shipping.cost double NOT NULL,

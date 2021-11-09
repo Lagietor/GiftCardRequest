@@ -7,19 +7,25 @@ class HeaderController
         $this->module = $module;
     }
 
-    public function run()
+    public function run(): void
     {
         // NIEDOKOŃCZONA METODA, ZAKOMENTOWANA W CELU UNIKNIĘCIA TYMCZASOWYCH BŁĘDÓW
-        // $table = $this->getTable();
+        // $data = $this->getData();
 
-        // foreach ($table as $index => $t) {
-        //     $data[$index] = $this->getLastData($t['tableName'], $t['idName'], $t['dataName']);
+        // foreach ($data as $index => $d) {
+        //     $data[$index] = $this->getLastData($d['tableName'], $d['idName'], $d['dataName']);
         // }
 
-        // Db::getInstance()->insert('test', $data);
+        if (!empty($data)) {
+            Db::getInstance()->insert('test', $data);
+
+            $requestData = $this->getRequestData();
+
+            $this->sendWebhook($requestData);
+        }
     }
 
-    public function getLastData($tableName, $idName, $dataName)
+    public function getLastData(string $tableName, string $idName, string $dataName): string
     {
         $data =  Db::getInstance()->getValue(
             "SELECT " . $dataName . " FROM " . $tableName . " ORDER BY " . $idName . " DESC"
@@ -28,7 +34,22 @@ class HeaderController
         return $data;
     }
 
-    public function getTable()
+    public function getRequestData(): array
+    {
+
+        $query = "SELECT * FROM " . _DB_PREFIX_ . "test ORDER BY id DESC LIMIT 1";
+        $requestData = Db::getInstance()->executeS($query);
+
+        return $requestData;
+    }
+
+    public function sendWebhook(array $requestData)
+    {
+        echo json_encode($requestData);
+        die();
+    }
+
+    public function getData(): array
     {
         // Przykładowe dane do nowo utworzonej tablicy testowej ps_test
         return [

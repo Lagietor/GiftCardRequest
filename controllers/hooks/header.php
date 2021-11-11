@@ -10,11 +10,11 @@ class HeaderController
     public function run(): void
     {
         // NIEDOKOŃCZONA METODA, ZAKOMENTOWANA W CELU UNIKNIĘCIA TYMCZASOWYCH BŁĘDÓW
-        // $data = $this->getData();
+        $data = $this->getData();
 
-        // foreach ($data as $index => $d) {
-        //     $data[$index] = $this->getLastData($d['tableName'], $d['idName'], $d['dataName']);
-        // }
+        foreach ($data as $index => $d) {
+            $data[$index] = $this->getLastData($d['tableName'], $d['idName'], $d['dataName']);
+        }
 
         if (!empty($data)) {
             Db::getInstance()->insert('test', $data);
@@ -36,7 +36,6 @@ class HeaderController
 
     public function getRequestData(): array
     {
-
         $query = "SELECT * FROM " . _DB_PREFIX_ . "test ORDER BY id DESC LIMIT 1";
         $requestData = Db::getInstance()->executeS($query);
 

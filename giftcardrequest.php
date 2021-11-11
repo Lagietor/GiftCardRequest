@@ -62,7 +62,8 @@ class GiftCardRequest extends Module
             $this->postProcess();
         }
 
-        return $this->output . $this->renderForm();
+        //return $this->confTable();
+        return $this->output . $this->renderForm() . $this->confTable();
     }
 
     public function getHookController($hookName)
@@ -76,8 +77,8 @@ class GiftCardRequest extends Module
 
     public function hookHeader() // hook do testów
     {
-        $controller = $this->getHookController('header');
-        return $controller->run();
+        // $controller = $this->getHookController('header');
+        // return $controller->run();
     }
 
     public function hookActionObjectOrderAddAfter()
@@ -209,6 +210,69 @@ class GiftCardRequest extends Module
                 ],
             ],
         ];
+    }
+
+    public function confTable()
+    {
+        $fields_list = [
+            'id_category' => [
+                'title' => $this->l('Id'),
+                'width' => 140,
+                'type' => 'int',
+            ],
+            'date' => [
+                'title' => $this->l('Data'),
+                'width' => 140,
+                'type' => 'date',
+            ],
+            'URL' => [
+                'title' => $this->l('URL'),
+                'width' => 140,
+                'type' => 'text'
+            ],
+            'Events' => [
+                'title' => $this->l("Zdarzenia"),
+                'width' => 140,
+                'type' => 'text'
+            ],
+            'Controlled sum' => [
+                'title' => $this->l("Suma kontrolna"),
+                'width' => 140,
+                'type' => 'text'
+            ],
+            'Status' => [
+                'title' => $this->l("Status"),
+                'width' => 140,
+                'type' => 'text'
+            ],
+            'send Again' => [
+                'title' => $this->l('Wyślij ponownie'),
+                'width' => 140,
+                'type' => 'button'
+            ]
+        ];
+
+        $query = "SELECT email, notes FROM ps_ordercreatedata";
+        $list = Db::getInstance()->executeS($query);
+        print_r($list);
+
+        $helper = new HelperList();
+
+        $helper->shopLinkType = '';
+
+        $helper->simple_header = true;
+
+        // Actions to be displayed in the "Actions" column
+        $helper->actions = array('edit', 'delete', 'view');
+
+        $helper->identifier = 'id_category';
+        $helper->show_toolbar = true;
+        $helper->title = $this->l("Historia Requestów");
+        $helper->table = $this->name . '_categories';
+
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+        $helper->currentIndex = AdminController::$currentIndex . '&configure=' . $this->name;
+        return $helper->generateList($list, $fields_list);
     }
     //metoda do możliwego wykorzystania w przyszłości
     private function getConfigFormValues(): array

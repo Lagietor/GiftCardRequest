@@ -36,6 +36,8 @@ class GiftCardRequest extends Module
         if (!parent::install()) {
             return false;
         }
+
+        $this->registerHook('actionOrderStatusPostUpdate');
         $this->registerHook('actionObjectOrderAddAfter');
         $this->registerHook('Header');
 
@@ -75,16 +77,22 @@ class GiftCardRequest extends Module
         return $controller;
     }
 
-    public function hookHeader() // hook do testów
+    public function hookHeader($params) // hook do testów
     {
         // $controller = $this->getHookController('header');
-        // return $controller->run();
+        // return $controller->run($params);
     }
 
-    public function hookActionObjectOrderAddAfter()
+    public function hookActionOrderStatusPostUpdate($params)
     {
-        $controller = $this->getHookController('ActionObjectOrderAddAfter');
-        return $controller->run();
+        $controller = $this->getHookController('ActionOrderStatusPostUpdate');
+        return $controller->run($params);
+    }
+
+    public function hookActionObjectOrderAddAfter($params)
+    {
+        // $controller = $this->getHookController('ActionObjectOrderAddAfter');
+        // return $controller->run($params);
     }
 
     protected function postProcess(): void
@@ -215,44 +223,44 @@ class GiftCardRequest extends Module
     public function confTable()
     {
         $fields_list = [
-            'id_category' => [
+            'order_id' => [
                 'title' => $this->l('Id'),
-                'width' => 140,
-                'type' => 'int',
+                'width' => 140
+                //'type' => 'float',
             ],
             'date' => [
                 'title' => $this->l('Data'),
                 'width' => 140,
-                'type' => 'date',
+                //'type' => 'date',
             ],
             'URL' => [
                 'title' => $this->l('URL'),
                 'width' => 140,
-                'type' => 'text'
+                //'type' => 'select'
             ],
             'Events' => [
                 'title' => $this->l("Zdarzenia"),
                 'width' => 140,
-                'type' => 'text'
+                //'type' => 'select'
             ],
             'Controlled sum' => [
                 'title' => $this->l("Suma kontrolna"),
                 'width' => 140,
-                'type' => 'text'
+                //'type' => 'select'
             ],
             'Status' => [
                 'title' => $this->l("Status"),
                 'width' => 140,
-                'type' => 'text'
+                //'type' => 'text'
             ],
             'send Again' => [
                 'title' => $this->l('Wyślij ponownie'),
                 'width' => 140,
-                'type' => 'button'
+                //'type' => 'button'
             ]
         ];
 
-        $query = "SELECT email, notes FROM ps_ordercreatedata";
+        $query = "SELECT email, notes FROM " . _DB_PREFIX_ . "ordercreatedata";
         $list = Db::getInstance()->executeS($query);
         print_r($list);
 
@@ -262,16 +270,16 @@ class GiftCardRequest extends Module
 
         $helper->simple_header = true;
 
-        // Actions to be displayed in the "Actions" column
-        $helper->actions = array('edit', 'delete', 'view');
+        $helper->actions = ['edit', 'delete', 'view'];
 
-        $helper->identifier = 'id_category';
+        $helper->identifier = 'order_id';
         $helper->show_toolbar = true;
         $helper->title = $this->l("Historia Requestów");
-        $helper->table = $this->name . '_categories';
+        $helper->table = '';
 
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->currentIndex = AdminController::$currentIndex . '&configure=' . $this->name;
+
         return $helper->generateList($list, $fields_list);
     }
     //metoda do możliwego wykorzystania w przyszłości

@@ -8,7 +8,7 @@ class ActionObjectOrderAddAfterController
         $this->module = $module;
     }
 
-    public function run()
+    public function run($params)
     {
         $data = $this->getData();
 

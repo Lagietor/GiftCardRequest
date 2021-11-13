@@ -7,7 +7,7 @@ class HeaderController
         $this->module = $module;
     }
 
-    public function run(): void
+    public function run($params): void
     {
         // NIEDOKOŃCZONA METODA, ZAKOMENTOWANA W CELU UNIKNIĘCIA TYMCZASOWYCH BŁĘDÓW
         $data = $this->getData();

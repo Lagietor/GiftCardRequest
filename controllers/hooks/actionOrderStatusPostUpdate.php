@@ -3,9 +3,10 @@
 class ActionOrderStatusPostUpdateController
 {
 
-    public function __construct($module)
+    public function __construct($module, $WebhookURL)
     {
         $this->module = $module;
+        $this->URL = $WebhookURL;
     }
 
     public function run($params)

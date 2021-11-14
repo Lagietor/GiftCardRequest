@@ -3,9 +3,10 @@
 class ActionObjectOrderAddAfterController
 {
 
-    public function __construct($module)
+    public function __construct($module, $WebhookURL)
     {
         $this->module = $module;
+        $this->URL = $WebhookURL;
     }
 
     public function run($params)
@@ -44,8 +45,23 @@ class ActionObjectOrderAddAfterController
 
     public function sendWebhook(array $requestData)
     {
-        // echo json_encode($requestData);
-        // die();
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => $this->URL,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POST => 1,
+            CURLOPT_POSTFIELDS => json_encode($requestData)
+        ]);
+
+        $response = curl_exec($curl);
+
+        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
+        return ($http_status == 200) ? $response : false;
     }
 
     public function getData(): array

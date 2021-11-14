@@ -2,14 +2,14 @@
 // KLASA TESTOWA
 class HeaderController
 {
-    public function __construct($module)
+    public function __construct($module, $WebhookURL)
     {
         $this->module = $module;
+        $this->URL = $WebhookURL;
     }
 
     public function run($params): void
     {
-        // NIEDOKOŃCZONA METODA, ZAKOMENTOWANA W CELU UNIKNIĘCIA TYMCZASOWYCH BŁĘDÓW
         $data = $this->getData();
 
         foreach ($data as $index => $d) {

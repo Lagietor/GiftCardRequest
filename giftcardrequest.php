@@ -64,15 +64,14 @@ class GiftCardRequest extends Module
             $this->postProcess();
         }
 
-        //return $this->confTable();
-        return $this->output . $this->renderForm() . $this->confTable();
+        return $this->output . $this->confWebhookTable() . $this->renderForm() . $this->confRequestTable();
     }
 
     public function getHookController($hookName)
     {
         require_once(__DIR__ . '/controllers/hooks/' . $hookName . '.php');
         $controllerName = $hookName . 'Controller';
-        $controller = new $controllerName($this);
+        $controller = new $controllerName($this, Configuration::get(self::CONFIG_URL_FIELD));
 
         return $controller;
     }
@@ -91,8 +90,9 @@ class GiftCardRequest extends Module
 
     public function hookActionObjectOrderAddAfter($params)
     {
-        // $controller = $this->getHookController('ActionObjectOrderAddAfter');
-        // return $controller->run($params);
+        // NIEDOKOŃCZONA METODA, ZAKOMENTOWANA W CELU UNIKNIĘCIA TYMCZASOWYCH BŁĘDÓW
+        $controller = $this->getHookController('ActionObjectOrderAddAfter');
+        return $controller->run($params);
     }
 
     protected function postProcess(): void
@@ -182,15 +182,15 @@ class GiftCardRequest extends Module
                         'options' => [
                             'query' => [
                                 [
-                                    'id_option' => 1,
+                                    'id_option' => 'JSON',
                                     'name' => 'JSON'
                                 ],
                                 [
-                                    'id_option' => 2,
+                                    'id_option' => 'JDAD',
                                     'name' => 'JDAD'
                                 ],
                                 [
-                                    'id_option' => 3,
+                                    'id_option' => 'JMOM',
                                     'name' => 'JMOM'
                                 ]
                             ],
@@ -202,11 +202,11 @@ class GiftCardRequest extends Module
                         'type' => 'select',
                         'label' => $this->l('Zdarzenia: '),
                         'name' => self::CONFIG_EVENT,
-                        'multiple' => true,
+                        'multiple' => false,
                         'options' => [
                             'query' => [
-                                ['key' => '1', 'name' => 'order.create'],
-                                ['key' => '2', 'name' => 'order.paid'],
+                                ['key' => 'order.create', 'name' => 'order.create'],
+                                ['key' => 'order.paid', 'name' => 'order.paid'],
                                         ],
                             'id' => 'key',
                             'name' => 'name'
@@ -220,38 +220,38 @@ class GiftCardRequest extends Module
         ];
     }
 
-    public function confTable()
+    public function confRequestTable()
     {
         $fields_list = [
             'order_id' => [
                 'title' => $this->l('Id'),
-                'width' => 140
-                //'type' => 'float',
+                'width' => 140,
+                'type' => 'text',
             ],
             'date' => [
                 'title' => $this->l('Data'),
                 'width' => 140,
-                //'type' => 'date',
+                'type' => 'datetime',
             ],
             'URL' => [
                 'title' => $this->l('URL'),
                 'width' => 140,
-                //'type' => 'select'
+                'type' => 'text'
             ],
             'Events' => [
                 'title' => $this->l("Zdarzenia"),
                 'width' => 140,
-                //'type' => 'select'
+                'type' => 'text'
             ],
             'Controlled sum' => [
                 'title' => $this->l("Suma kontrolna"),
                 'width' => 140,
-                //'type' => 'select'
+                'type' => 'text'
             ],
             'Status' => [
                 'title' => $this->l("Status"),
                 'width' => 140,
-                //'type' => 'text'
+                'type' => 'text'
             ],
             'send Again' => [
                 'title' => $this->l('Wyślij ponownie'),
@@ -260,7 +260,7 @@ class GiftCardRequest extends Module
             ]
         ];
 
-        $query = "SELECT email, notes FROM " . _DB_PREFIX_ . "ordercreatedata";
+        $query = "SELECT order_id, email, notes FROM " . _DB_PREFIX_ . "ordercreatedata";
         $list = Db::getInstance()->executeS($query);
         print_r($list);
 
@@ -275,13 +275,83 @@ class GiftCardRequest extends Module
         $helper->identifier = 'order_id';
         $helper->show_toolbar = true;
         $helper->title = $this->l("Historia Requestów");
-        $helper->table = '';
+        $helper->table = _DB_PREFIX_ . "ordercreatedata";
+        $helper->className = 'GiftCardRequest';
 
         $helper->token = Tools::getAdminTokenLite('AdminModules');
         $helper->currentIndex = AdminController::$currentIndex . '&configure=' . $this->name;
 
         return $helper->generateList($list, $fields_list);
     }
+
+    public function confWebhookTable()
+    {
+        $fields_list = [
+            'ID' => [
+                'title' => $this->l('Id'),
+                'width' => 140,
+                'type' => 'text',
+            ],
+            'URL' => [
+                'title' => $this->l('URL'),
+                'width' => 140,
+                'type' => 'text'
+            ],
+            'Events' => [
+                'title' => $this->l("Zdarzenia"),
+                'width' => 140,
+                'type' => 'text'
+            ],
+            'Form' => [
+                'title' => $this->l('Format'),
+                'width' => 140,
+                'type' => 'text'
+            ],
+            'Activity' => [
+                'title' => $this->l("Aktywność"),
+                'width' => 140,
+                'type' => 'text'
+            ]
+        ];
+
+        $webhooks = [
+            0 => [
+                'ID' => "1",
+                'URL' => Configuration::get(self::CONFIG_URL_FIELD),
+                'Events' => Configuration::get(self::CONFIG_EVENT),
+                'Form' => Configuration::get(self::CONFIG_FORM),
+                'Activity' => Configuration::get(self::CONFIG_STATUS)
+            ],
+            1 => [
+                'ID' => "2",
+                'URL' => Configuration::get(self::CONFIG_URL_FIELD),
+                'Events' => Configuration::get(self::CONFIG_EVENT),
+                'Form' => Configuration::get(self::CONFIG_FORM),
+                'Activity' => Configuration::get(self::CONFIG_STATUS)
+            ]
+        ];
+
+        $helper = new HelperList();
+
+        $helper->shopLinkType = '';
+
+        $helper->simple_header = true;
+
+        $helper->actions = ['edit'];
+
+        $helper->identifier = 'ID';
+        $helper->show_toolbar = true;
+        $helper->title = $this->l("Webhooki");
+        $helper->table = '';
+        $helper->className = 'GiftCardRequest';
+
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+        $helper->currentIndex = AdminController::$currentIndex . '&configure=' . $this->name;
+
+        return $helper->generateList($webhooks, $fields_list);
+    }
+
+
     //metoda do możliwego wykorzystania w przyszłości
     private function getConfigFormValues(): array
     {

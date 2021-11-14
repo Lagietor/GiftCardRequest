@@ -1,8 +1,16 @@
 <?php
 
+// TODO: zmienić tłumaczenia $this->l (te są deprecated)
+
+use Tab;
+use Language;
+
 if (!defined('_PS_VERSION_')) {
     exit;
 }
+
+// TODO: wrzucić do autoloadera jak będzie więcej
+require_once(__DIR__ . '/Model/GcrWebHook.php');
 
 class GiftCardRequest extends Module
 {
@@ -33,7 +41,7 @@ class GiftCardRequest extends Module
 
     public function install()
     {
-        if (!parent::install()) {
+        if (! parent::install() || ! $this->installTabs()) {
             return false;
         }
 
@@ -46,19 +54,48 @@ class GiftCardRequest extends Module
         return true;
     }
 
+    // TODO: to było niezbędne w 1.6 żeby controller zadziałał, zweryfikować w 1.7
+    private function installTabs(): bool
+    {
+		$tab = new Tab();
+        $langs = Language::getLanguages();
+        foreach ($langs as $lang) {
+            $tab->name[$lang['id_lang']] = $this->l('WebHooks');
+        }
+		$tab->class_name = 'AdminGcrWebhook';
+		$tab->id_parent = -1;
+		$tab->module = $this->name;
+
+		return $tab->add();
+    }
+
     public function uninstall()
     {
         if (!parent::uninstall()) {
             return false;
         }
 
+        $this->uninstallTabs();
         Configuration::deleteByName(self::CONFIG_STATUS);
 
         return true;
     }
 
+    // TODO: to samo co przy installTabs()
+    private function uninstallTabs(): void
+    {
+        $tabs = Tab::getCollectionFromModule($this->name);
+        foreach ($tabs as $moduleTab) {
+            $moduleTab->delete();
+        }
+    }
+
     public function getContent()
     {
+        // TODO: usunąć
+        // link do WebHook kontrolera
+        // dump($this->context->link->getAdminLink('AdminGcrWebhook')); die;
+
         $this->output = '';
         if (((bool)Tools::isSubmit('giftCardRequestSubmit')) == true) {
             $this->postProcess();

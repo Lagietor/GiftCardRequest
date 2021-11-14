@@ -1,3 +1,14 @@
+-- do modelu GcrWebHook
+CREATE TABLE `ps_giftcardrequest_webhook` (
+ `id_giftcardrequest_webhook` int NOT NULL AUTO_INCREMENT,
+ `url` varchar(255) NOT NULL,
+ `secure_key` varchar(255) NOT NULL,
+ `active` tinyint NOT NULL DEFAULT '0',
+ `date_add` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+ `date_upd` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+ PRIMARY KEY (`id_giftcardrequest_webhook`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+
 CREATE TABLE ordercreatedata (
     order_id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
     user_id int NOT NULL,

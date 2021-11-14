@@ -11,7 +11,7 @@ class ActionOrderStatusPostUpdateController
 
     public function run($params)
     {
-        print_r($params);
-        die();
+        // print_r($params);
+        // die();
     }
 }

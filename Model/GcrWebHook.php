@@ -34,6 +34,7 @@ class GcrWebHook extends ObjectModel
                 'required' => true,
                 'validate' => 'isUrl',
                 'size' => [
+                    'min' => 1,
                     'max' => 255
                 ],
             ],
@@ -42,6 +43,7 @@ class GcrWebHook extends ObjectModel
                 'required' => true,
                 'validate' => 'isGenericName',
                 'size' => [
+                    'min' => 1,
                     'max' => 255
                 ],
             ],

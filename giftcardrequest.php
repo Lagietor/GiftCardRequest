@@ -2,8 +2,8 @@
 
 // TODO: zmienić tłumaczenia $this->l (te są deprecated)
 
-use Tab;
-use Language;
+// use Tab;
+// use Language;
 
 if (!defined('_PS_VERSION_')) {
     exit;
@@ -94,7 +94,8 @@ class GiftCardRequest extends Module
     {
         // TODO: usunąć
         // link do WebHook kontrolera
-        // dump($this->context->link->getAdminLink('AdminGcrWebhook')); die;
+        dump($this->context->link->getAdminLink('AdminGcrWebhook'));
+        die;
 
         $this->output = '';
         if (((bool)Tools::isSubmit('giftCardRequestSubmit')) == true) {
@@ -127,7 +128,6 @@ class GiftCardRequest extends Module
 
     public function hookActionObjectOrderAddAfter($params)
     {
-        // NIEDOKOŃCZONA METODA, ZAKOMENTOWANA W CELU UNIKNIĘCIA TYMCZASOWYCH BŁĘDÓW
         $controller = $this->getHookController('ActionObjectOrderAddAfter');
         return $controller->run($params);
     }
@@ -299,7 +299,7 @@ class GiftCardRequest extends Module
 
         $query = "SELECT order_id, email, notes FROM " . _DB_PREFIX_ . "ordercreatedata";
         $list = Db::getInstance()->executeS($query);
-        print_r($list);
+        //print_r($list);
 
         $helper = new HelperList();
 

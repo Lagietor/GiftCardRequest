@@ -22,6 +22,10 @@ class ActionObjectOrderAddAfterController
 
             $requestData = $this->getRequestData();
 
+            //dump($params['object']->id);
+            dump($params);
+            die();
+
             $this->sendWebhook($requestData);
         }
     }

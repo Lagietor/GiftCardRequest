@@ -56,9 +56,15 @@ class AdminGcrWebhookController extends ModuleAdminController
 
     public function renderForm()
     {
+        // TODO: usunąć komentarz
+        //! zazwyczaj w kontrolerze tak się nazywa ten obiekt, ale nie jest to żaden wymóg
+        /** @var \GcrWebHook $obj */
+        $obj = $this->loadObject(true);
+
         $this->fields_form = [
             'legend' => [
-                'title' => $this->l('Example'),
+                'title' => $this->l('WebHook'),
+                'icon' => 'icon-edit',
             ],
             'input' => [
                 [
@@ -90,12 +96,46 @@ class AdminGcrWebhookController extends ModuleAdminController
                         ]
                     ]
                 ],
+                [
+                    'type' => 'swap',
+                    'label' => $this->l('States'),
+                    'desc' => $this->l(
+                        'The webhook will be launched after the order status changes to the selected states'
+                    ),
+                    'name' => 'ids_order_states',
+                    'required' > true,
+                    'size' => 15,
+                    'options' => array(
+                        'query' => OrderState::getOrderStates($this->context->language->id),
+                        'id' => 'id_order_state',
+                        'name' => 'name',
+                    ),
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
             ],
         ];
 
+        $this->fields_value['ids_order_states'] = $obj->getOrderStates();
+
         return parent::renderForm();
+    }
+
+    public function postProcess()
+    {
+        $parentResult = parent::postProcess();
+
+        if (Tools::isSubmit('submitAddgiftcardrequest_webhook')) {
+            /** @var \GcrWebHook $obj */
+            if (! $obj = $this->loadObject()) {
+                return $parentResult;
+            }
+
+            $idsOrderStates = Tools::getValue('ids_order_states_selected', []);
+            $obj->setOrderStates($idsOrderStates);
+        }
+
+        return $parentResult;
     }
 }

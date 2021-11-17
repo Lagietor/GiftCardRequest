@@ -1,9 +1,7 @@
 <?php
 
 // TODO: zmienić tłumaczenia $this->l (te są deprecated)
-
-// use Tab;
-// use Language;
+// TODO: ogarnąć skrypty tworzenia/usuwania tabel w bazie danych
 
 if (!defined('_PS_VERSION_')) {
     exit;

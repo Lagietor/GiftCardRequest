@@ -2,6 +2,9 @@
 
 class GcrWebHook extends ObjectModel
 {
+    /** @var string */
+    private const TABLE_WEBHOOK_STATE = 'giftcardrequest_webhook_order_state';
+
     /** @var int */
     public $id;
 
@@ -10,8 +13,6 @@ class GcrWebHook extends ObjectModel
 
     /** @var string */
     public $secure_key;
-
-    // TODO: skojarzyć z eventami
 
     // TODO: format potrzebny? jest jakiś inny niż JSON
 
@@ -63,4 +64,51 @@ class GcrWebHook extends ObjectModel
             ],
         ],
     ];
+
+    public function setOrderStates(array $idsOrderStates): bool
+    {
+        return $this->removeOrderStates()
+            && $this->storeOrderStates($idsOrderStates);
+    }
+
+    private function removeOrderStates(): bool
+    {
+        if (! $this->id) {
+            return true;
+        }
+
+        return \Db::getInstance()->delete(self::TABLE_WEBHOOK_STATE, 'id_giftcardrequest_webhook = ' . (int)$this->id);
+    }
+
+    private function storeOrderStates(array $idsOrderStates = [])
+    {
+        if (empty($idsOrderStates)) {
+            return true;
+        }
+
+        $insertValues = [];
+
+        foreach ($idsOrderStates as $id) {
+            $insertValues[] = [
+                'id_giftcardrequest_webhook' => $this->id,
+                'id_order_state' => $id,
+            ];
+        }
+
+        return \Db::getInstance()->insert(self::TABLE_WEBHOOK_STATE, $insertValues);
+    }
+
+    public function getOrderStates(): array
+    {
+        if (empty($this->id)) {
+            return [];
+        }
+
+        $sql = new \DbQuery();
+        $sql->select('id_order_state')
+            ->from(self::TABLE_WEBHOOK_STATE)
+            ->where('id_giftcardrequest_webhook = ' . (int)$this->id);
+
+        return array_column(\Db::getInstance()->executeS($sql), 'id_order_state');
+    }
 }

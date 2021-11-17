@@ -9,6 +9,15 @@ CREATE TABLE `ps_giftcardrequest_webhook` (
  PRIMARY KEY (`id_giftcardrequest_webhook`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 
+
+-- połączenie modelu GcrWebHook ze statusem zamówień
+CREATE TABLE `ps_giftcardrequest_webhook_order_state` (
+ `id_giftcardrequest_webhook` int NOT NULL,
+ `id_order_state` int NOT NULL,
+ PRIMARY KEY (`id_giftcardrequest_webhook`,`id_order_state`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+
+
 CREATE TABLE ordercreatedata (
     order_id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
     user_id int NOT NULL,

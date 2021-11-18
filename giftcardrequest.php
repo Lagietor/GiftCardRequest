@@ -9,6 +9,7 @@ if (!defined('_PS_VERSION_')) {
 
 // TODO: wrzucić do autoloadera jak będzie więcej
 require_once(__DIR__ . '/Model/GcrWebHook.php');
+require_once(__DIR__ . '/controllers/hooks/HookControllerInterface.php');
 
 class GiftCardRequest extends Module
 {
@@ -103,7 +104,7 @@ class GiftCardRequest extends Module
         return $this->output . $this->confWebhookTable() . $this->renderForm() . $this->confRequestTable();
     }
 
-    public function getHookController($hookName)
+    public function getHookController($hookName): HookControllerInterface
     {
         try {
             $controllerName = $hookName . 'Controller';

@@ -1,6 +1,6 @@
 <?php
 
-class ActionOrderStatusPostUpdateController
+class ActionOrderStatusPostUpdateController implements HookControllerInterface
 {
 
     private $currentState;

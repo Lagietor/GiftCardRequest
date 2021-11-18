@@ -126,8 +126,8 @@ class GiftCardRequest extends Module
 
     public function hookActionObjectOrderAddAfter($params)
     {
-        $controller = $this->getHookController('ActionObjectOrderAddAfter');
-        return $controller->run($params);
+        // $controller = $this->getHookController('ActionObjectOrderAddAfter');
+        // return $controller->run($params);
     }
 
     protected function postProcess(): void

@@ -11,10 +11,10 @@ class ActionObjectOrderAddAfterController
 
     public function run($params)
     {
-        $data = $this->getData();
+        $params = $this->getParams();
 
-        foreach ($data as $index => $d) {
-            $data[$index] = $this->getLastData($d['tableName'], $d['idName'], $d['dataName']);
+        foreach ($params as $index => $p) {
+            $data[$index] = $this->getLastData($p['tableName'], $p['idName'], $p['dataName']);
         }
 
         if (!empty($data)) {
@@ -23,8 +23,6 @@ class ActionObjectOrderAddAfterController
             $requestData = $this->getRequestData();
 
             //dump($params['object']->id);
-            dump($params);
-            die();
 
             $this->sendWebhook($requestData);
         }
@@ -68,7 +66,7 @@ class ActionObjectOrderAddAfterController
         // return ($http_status == 200) ? $response : false;
     }
 
-    public function getData(): array
+    public function getParams(): array
     {
         return [
             'email' => [

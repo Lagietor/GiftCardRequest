@@ -34,7 +34,9 @@ class GiftCardRequest extends Module
         parent::__construct();
 
         $this->displayName = $this->l('My Module of GiftCard Requests');
-        $this->description = $this->l('With this module you will be able to send requests if a customer uses a gift card');
+        $this->description = $this->l(
+            'With this module you will be able to send requests if a customer uses a gift card'
+        );
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module? (GiftCardRequest)');
     }
 
@@ -56,16 +58,16 @@ class GiftCardRequest extends Module
     // TODO: to było niezbędne w 1.6 żeby controller zadziałał, zweryfikować w 1.7
     private function installTabs(): bool
     {
-		$tab = new Tab();
+        $tab = new Tab();
         $langs = Language::getLanguages();
         foreach ($langs as $lang) {
             $tab->name[$lang['id_lang']] = $this->l('WebHooks');
         }
-		$tab->class_name = 'AdminGcrWebhook';
-		$tab->id_parent = -1;
-		$tab->module = $this->name;
+        $tab->class_name = 'AdminGcrWebhook';
+        $tab->id_parent = -1;
+        $tab->module = $this->name;
 
-		return $tab->add();
+        return $tab->add();
     }
 
     public function uninstall()
@@ -116,7 +118,7 @@ class GiftCardRequest extends Module
 
             require_once($path);
 
-            return new $controllerName($this, Configuration::get(self::CONFIG_URL_FIELD));
+            return new $controllerName($this, Configuration::get(self::CONFIG_URL_FIELD)); // TODO: usunąć drugi param.?
         } catch (\Throwable $th) {
             echo $th->getMessage();
             die;

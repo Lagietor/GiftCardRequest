@@ -1,4 +1,5 @@
 <?php
+
 // KLASA TESTOWA
 class HeaderController
 {

@@ -31,9 +31,9 @@ class ActionOrderStatusPostUpdateController
     public function checkState(): bool
     {
         $query =
-        "SELECT " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state.id_order_state FROM 
-        " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state, " . _DB_PREFIX_ . "giftcardrequest_webhook WHERE 
-        " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state.id_giftcardrequest_webhook = 
+        "SELECT " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state.id_order_state FROM
+        " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state, " . _DB_PREFIX_ . "giftcardrequest_webhook WHERE
+        " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state.id_giftcardrequest_webhook =
         " . _DB_PREFIX_ . "giftcardrequest_webhook.id_giftcardrequest_webhook"
         ;
 

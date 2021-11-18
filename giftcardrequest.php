@@ -105,11 +105,21 @@ class GiftCardRequest extends Module
 
     public function getHookController($hookName)
     {
-        require_once(__DIR__ . '/controllers/hooks/' . $hookName . '.php');
-        $controllerName = $hookName . 'Controller';
-        $controller = new $controllerName($this, Configuration::get(self::CONFIG_URL_FIELD));
+        try {
+            $controllerName = $hookName . 'Controller';
+            $path = __DIR__ . '/controllers/hooks/' . $controllerName . '.php';
 
-        return $controller;
+            if (! file_exists($path)) {
+                throw new \Exception('Hook controller not found: ' . $path);
+            }
+
+            require_once($path);
+
+            return new $controllerName($this, Configuration::get(self::CONFIG_URL_FIELD));
+        } catch (\Throwable $th) {
+            echo $th->getMessage();
+            die;
+        }
     }
 
     public function hookHeader($params) // hook do testów

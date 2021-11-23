@@ -3,20 +3,17 @@
 class GcrWebHookHandler
 {
     private $currentState;
+    private $oderId; // zmienna do możliwego wykorzystania w przyszłości
 
-    public function __construct(int $orderId, int $orderState)
+    public function __construct(int $orderId, int $currentState)
     {
         $this->orderId = $orderId;
-        $this->orderState = $orderState;
+        $this->currentState = $currentState;
     }
 
     public function checkData()
     {
-        $orderId = $this->orderId;
-
-        $this->currentState = $this->orderState;
-
-        if ($this->checkState($orderId)) {
+        if ($this->checkState()) {
             $webhookId = $this->getWebhookId();
             $this->sendWebhook($webhookId);
         }
@@ -25,25 +22,16 @@ class GcrWebHookHandler
     public function checkState(): bool
     {
         $query =
-        "SELECT " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state.id_order_state FROM
-        " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state, " . _DB_PREFIX_ . "giftcardrequest_webhook WHERE
-        " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state.id_giftcardrequest_webhook =
-        " . _DB_PREFIX_ . "giftcardrequest_webhook.id_giftcardrequest_webhook"
-        ;
+        "SELECT " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state.id_giftcardrequest_webhook
+        FROM " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state, " . _DB_PREFIX_ . "giftcardrequest_webhook 
+        WHERE " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state.id_order_state = " . $this->currentState .
+        "&& " . _DB_PREFIX_ . "giftcardrequest_webhook.id_giftcardrequest_webhook = 
+        " . _DB_PREFIX_ . "giftcardrequest_webhook_order_state.id_giftcardrequest_webhook 
+        && " . _DB_PREFIX_ . "giftcardrequest_webhook.active = 1;";
 
-        $webhooksStates = Db::getInstance()->executeS($query);
+        $states = Db::getInstance()->executeS($query);
 
-        if (!empty($webhooksStates)) {
-            $webhooksStates = array_column($webhooksStates, 'id_order_state');
-
-            if (in_array($this->currentState, $webhooksStates)) {
-                return true;
-            }
-
-            return false;
-        } else {
-            return false;
-        }
+        return (!empty($states)) ? true : false;
     }
 
     public function getWebhookId(): int
@@ -60,8 +48,8 @@ class GcrWebHookHandler
 
     public function sendwebhook(int $webhookId)
     {
-        // dump("Wyślij webhook o takim Id: " . $webhookId);
-        // die;
+        dump("Wyślij webhook o takim Id: " . $webhookId);
+        die;
 
         // $curl = curl_init();
         // curl_setopt_array($curl, [

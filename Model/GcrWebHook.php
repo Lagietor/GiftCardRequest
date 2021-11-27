@@ -14,6 +14,9 @@ class GcrWebHook extends ObjectModel
     /** @var string */
     public $secure_key;
 
+    /** @var string */
+    public $data_collector;
+
     // TODO: format potrzebny? jest jakiś inny niż JSON
 
     /** @var int */
@@ -47,6 +50,11 @@ class GcrWebHook extends ObjectModel
                     'min' => 1,
                     'max' => 255
                 ],
+            ],
+            'data_collector' => [
+                'type' => self::TYPE_STRING,
+                'required' => true,
+                'validate' => 'isGenericName',
             ],
             'active' => [
                 'type' => self::TYPE_BOOL,
@@ -110,5 +118,43 @@ class GcrWebHook extends ObjectModel
             ->where('id_giftcardrequest_webhook = ' . (int)$this->id);
 
         return array_column(\Db::getInstance()->executeS($sql), 'id_order_state');
+    }
+
+    /**
+     * @reutrn \OrderState[]
+     */
+    public static function getByOrderState(int $idOrderState): array
+    {
+        $ids = self::getIdsByOrderState($idOrderState);
+
+        if (empty($ids)) {
+            return [];
+        }
+
+        $webhooks = [];
+        foreach ($ids as $id) {
+            // TODO: dodać weryfikację
+            $webhooks[] = new \GcrWebHook($id);
+        }
+
+        return $webhooks;
+    }
+
+    /**
+     * @return int[]
+     */
+    public static function getIdsByOrderState(int $idOrderState, bool $activeOnly = true): array
+    {
+        $sql = new \DbQuery();
+        $sql->select('wos.id_giftcardrequest_webhook')
+            ->from('giftcardrequest_webhook_order_state', 'wos')
+            ->leftJoin('giftcardrequest_webhook', 'w', 'w.id_giftcardrequest_webhook = wos.id_giftcardrequest_webhook')
+            ->where('wos.id_order_state = ' . $idOrderState);
+
+        if ($activeOnly) {
+            $sql->where('w.active = 1');
+        }
+
+        return array_column(\Db::getInstance()->executeS($sql), 'id_giftcardrequest_webhook');
     }
 }

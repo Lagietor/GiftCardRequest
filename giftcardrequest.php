@@ -7,10 +7,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-// TODO: wrzucić do autoloadera jak będzie więcej
-require_once(__DIR__ . '/Model/GcrWebHook.php');
-require_once(__DIR__ . '/controllers/hooks/HookControllerInterface.php');
-require_once(__DIR__ . '/classes/GcrWebHookHandler.php');
+require_once(__DIR__ . '/vendor/autoload.php');
 
 class GiftCardRequest extends Module
 {
@@ -107,7 +104,7 @@ class GiftCardRequest extends Module
         return $this->output . $this->confWebhookTable() . $this->renderForm() . $this->confRequestTable();
     }
 
-    public function getHookController($hookName): HookControllerInterface
+    public function getHookController($hookName): \Gcr\Core\HookControllerInterface
     {
         try {
             $controllerName = $hookName . 'Controller';
@@ -119,7 +116,7 @@ class GiftCardRequest extends Module
 
             require_once($path);
 
-            return new $controllerName($this, Configuration::get(self::CONFIG_URL_FIELD)); // TODO: usunąć drugi param.?
+            return new $controllerName($this);
         } catch (\Throwable $th) {
             echo $th->getMessage();
             die;

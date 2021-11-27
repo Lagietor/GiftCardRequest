@@ -3,6 +3,7 @@ CREATE TABLE `ps_giftcardrequest_webhook` (
  `id_giftcardrequest_webhook` int NOT NULL AUTO_INCREMENT,
  `url` varchar(255) NOT NULL,
  `secure_key` varchar(255) NOT NULL,
+ `data_collector` varchar(50) NOT NULL,
  `active` tinyint NOT NULL DEFAULT '0',
  `date_add` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
  `date_upd` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',

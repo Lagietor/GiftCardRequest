@@ -34,6 +34,10 @@ class AdminGcrWebhookController extends ModuleAdminController
                 'title' => $this->l('Key'),
                 'width' => 'auto',
             ),
+            'data_collector' => array(
+                'title' => $this->l('Data Collector'),
+                'width' => 'auto',
+            ),
 
             // TODO: nie działa wł/wył po ajaxie
             'active' => array(
@@ -56,8 +60,6 @@ class AdminGcrWebhookController extends ModuleAdminController
 
     public function renderForm()
     {
-        // TODO: usunąć komentarz
-        //! zazwyczaj w kontrolerze tak się nazywa ten obiekt, ale nie jest to żaden wymóg
         /** @var \GcrWebHook $obj */
         $obj = $this->loadObject(true);
 
@@ -110,6 +112,20 @@ class AdminGcrWebhookController extends ModuleAdminController
                         'id' => 'id_order_state',
                         'name' => 'name',
                     ),
+                ],
+                [
+                    'type'          => 'select',
+                    'label'         => $this->l('Data collector:'),
+                    'name'          => 'data_collector',
+                    'multiple'      => false,
+                    'required'      => true,
+                    'empty_message' => $this->l('Nothing to display'),
+
+                    'options' => [
+                        'query' => Gcr\Core\DataCollectorBase::getAllQuery(),
+                        'id'    => 'id_option',
+                        'name'  => 'name',
+                    ],
                 ],
             ],
             'submit' => [

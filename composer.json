@@ -1,0 +1,6 @@
+{
+    "autoload": {
+        "files": ["Model/GcrWebHook.php"],
+        "psr-4": {"Gcr\\": "classes/"}
+    }
+}

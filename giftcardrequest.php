@@ -93,8 +93,12 @@ class GiftCardRequest extends Module
     {
         // TODO: usunąć
         // link do WebHook kontrolera
-        dump($this->context->link->getAdminLink('AdminGcrWebhook'));
-        die;
+        // dump($this->context->link->getAdminLink('AdminGcrWebhook'));
+        // die;
+
+        $idOrder = 14;
+        $opc = new Gcr\DataCollector\OrderPaidCollector($idOrder);
+        dump($opc->getData()); die;
 
         $this->output = '';
         if (((bool)Tools::isSubmit('giftCardRequestSubmit')) == true) {
@@ -131,6 +135,9 @@ class GiftCardRequest extends Module
 
     public function hookActionOrderStatusPostUpdate($params)
     {
+        // TODO: usunąć return po utworzeniu tabel z danymi
+        return;
+
         $controller = $this->getHookController('ActionOrderStatusPostUpdate');
         return $controller->run($params);
     }

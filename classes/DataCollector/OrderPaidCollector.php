@@ -2,44 +2,45 @@
 
 namespace Gcr\DataCollector;
 
+use ConnectionCore;
 use Gcr\Core\DataCollectorBase;
 
 class OrderPaidCollector extends DataCollectorBase
 {
-    public function getTableInfo(): array
-    {
-        $orderData = $this->getOrderData();
+    // public function getTableInfo(): array
+    // {
+    //     $orderData = $this->getOrderData();
 
-        foreach ($orderData as $index => $o) {
-            $data[$index] = $this->getOrderInfo($o['tableName'], $o['idName'], $o['dataName']);
-        }
+    //     foreach ($orderData as $index => $o) {
+    //         $data[$index] = $this->getOrderInfo($o['tableName'], $o['idName'], $o['dataName']);
+    //     }
 
-        return $data;
-    }
+    //     return $data;
+    // }
 
-    public function getOrderInfo(string $tableName, string $idName, string $dataName)
-    {
-        return \Db::getInstance()->getValue(
-            "SELECT " . $dataName . " FROM " . $tableName . " WHERE " . $idName . " = " . $this->idOrder
-        );
-    }
+    // public function getOrderInfo(string $tableName, string $idName, string $dataName)
+    // {
+    //     return \Db::getInstance()->getValue(
+    //         "SELECT " . $dataName . " FROM " . $tableName . " WHERE " . $idName . " = " . $this->idOrder
+    //     );
+    // }
 
-    public function getOrderData(): array
-    {
-        return [
-            'user_id' => [
-                'tableName' => 'ps_orders',
-                'idName' => 'id_order',
-                'dataName' => 'id_customer'
-                ],
+    // public function getOrderData(): array
+    // {
+    //     return [
+    //         'user_id' => [
+    //             'tableName' => 'ps_orders',
+    //             'idName' => 'id_order',
+    //             'dataName' => 'id_customer'
+    //             ],
 
-            'date_add' => [
-                'tableName' => 'ps_orders',
-                'idName' => 'id_order',
-                'dataName' => 'date_add'
-                ]
-            ];
-    }
+    //         'date_add' => [
+    //             'tableName' => 'ps_orders',
+    //             'idName' => 'id_order',
+    //             'dataName' => 'date_add'
+    //             ]
+    //         ];
+    // }
 
     private function getOrderStatusInfo(): array
     {
@@ -65,6 +66,16 @@ class OrderPaidCollector extends DataCollectorBase
         $orderStatusInfo = $this->getOrderStatusInfo();
         // dump($orderStatusInfo);
 
+        $connections = new \Connection($order->id_customer);
+        // dump($connection);
+
+        //$product = new \Product();
+
+        $carrier = new \Carrier();
+        // dump($carrier);
+
+        $address = new \Address($order->id_address_delivery, $order->id_lang);
+
         return [
             'order_id' => $order->id,
             'user_id' => $customer->id,
@@ -89,16 +100,16 @@ class OrderPaidCollector extends DataCollectorBase
             'currency_name' => 'PLN', // only PLN supported
             'currency_rate' => 1,
             'paid' => $order->total_paid, // TODO: verify
-            'ip_address' => '',
-            'discount_client' => '',
+            'ip_address' => $connections->ip_address, //TODO: verify on others clients
+            'discount_client' => '', // klasa discount została usunięta więc trzeba będzie wyszukać danych z bazy danych ręcznie i guess
             'discount_group' => '',
             'discount_levels' => '',
             'discount_code' => '',
-            'shipping_vat' => '',
+            'shipping_vat' => $carrier->getIdTaxRulesGroupByIdCarrier($order->id_carrier), // pokazuje id ale lepiej byłoby to pobrać z klasy Product
             'shipping_vat_value' => '',
             'shipping_vat_name' => '',
             'code_id' => '',
-            'lang_id' => '',
+            'lang_id' => $order->id_lang,
             'origin' => '',
             'promo_code' => '',
         ];

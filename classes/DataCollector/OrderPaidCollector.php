@@ -58,7 +58,7 @@ class OrderPaidCollector extends DataCollectorBase
 
         // TODO: walidować czy poprawnie pobrano, jak nie to wyjątek (zaimplementować wyjątki :P)
         $order = new \Order($this->idOrder);
-        // dump($order);
+        //dump($order);
 
         $customer = new \Customer($order->id_customer);
         // dump($customer);
@@ -101,12 +101,12 @@ class OrderPaidCollector extends DataCollectorBase
             'currency_rate' => 1,
             'paid' => $order->total_paid, // TODO: verify
             'ip_address' => $connections->ip_address, //TODO: verify on others clients
-            'discount_client' => '', // klasa discount została usunięta więc trzeba będzie wyszukać danych z bazy danych ręcznie i guess
+            'discount_client' => '',
             'discount_group' => '',
             'discount_levels' => '',
             'discount_code' => '',
             'shipping_vat' => $carrier->getIdTaxRulesGroupByIdCarrier($order->id_carrier), // pokazuje id ale lepiej byłoby to pobrać z klasy Product
-            'shipping_vat_value' => '',
+            'shipping_vat_value' => $order->total_shipping_tax_incl - $order->total_shipping_tax_exclude,
             'shipping_vat_name' => '',
             'code_id' => '',
             'lang_id' => $order->id_lang,

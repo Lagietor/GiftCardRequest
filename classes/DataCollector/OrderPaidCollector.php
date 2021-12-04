@@ -69,12 +69,10 @@ class OrderPaidCollector extends DataCollectorBase
         $connections = new \Connection($order->id_customer);
         // dump($connection);
 
-        //$product = new \Product();
+        $product = new \Product($order->getProductsDetail()[0]['id_product'], true, $order->id_lang);
 
         $carrier = new \Carrier();
         // dump($carrier);
-
-        $address = new \Address($order->id_address_delivery, $order->id_lang);
 
         return [
             'order_id' => $order->id,
@@ -105,9 +103,9 @@ class OrderPaidCollector extends DataCollectorBase
             'discount_group' => '',
             'discount_levels' => '',
             'discount_code' => '',
-            'shipping_vat' => $carrier->getIdTaxRulesGroupByIdCarrier($order->id_carrier), // pokazuje id ale lepiej byłoby to pobrać z klasy Product
+            'shipping_vat' => $carrier->getIdTaxRulesGroupByIdCarrier($order->id_carrier),
             'shipping_vat_value' => $order->total_shipping_tax_incl - $order->total_shipping_tax_exclude,
-            'shipping_vat_name' => '',
+            'shipping_vat_name' => $product->tax_name,
             'code_id' => '',
             'lang_id' => $order->id_lang,
             'origin' => '',

@@ -316,8 +316,8 @@ class OrderPaidCollector extends DataCollectorBase
             ),
             '{total_shipping_tax_incl}' => Tools::getContextLocale($this->context)->formatPrice(
                 $this->order->total_shipping_tax_incl,
-                $this->context->currency->iso_code)
-                ,
+                $this->context->currency->iso_code
+            ),
             '{total_wrapping}' => Tools::getContextLocale($this->context)->formatPrice(
                 $this->order->total_wrapping,
                 $this->context->currency->iso_code

@@ -3,18 +3,24 @@
 namespace Gcr\DataCollector;
 
 use Gcr\Core\DataCollectorBase;
+use Gcr\Core\DefaultDataCollectorTrait;
 
 class OrderCreateCollector extends DataCollectorBase
 {
+    protected const STATUS_TYPE = 1; // 1 for new, 3 for paid
+    protected const PAID = 0.0;
+
+    use DefaultDataCollectorTrait {
+        getData as protected getDataTrait;
+    }
+
     public function getData(): array
     {
-        // TODO: to ma zwrócić array z wszystkimi wymaganymi polami. ID zamówienia jest w $this->idOrder
-        // return [
-        //     'order_id' => (int)$this->idOrder,
-        //     'user_id' => // pobrać ID usera
-        //     'date' => // pobrać datę utworzenia zamówienia
-        // ];
+        $data = $this->getDataTrait();
 
-        return [];
+        // set values for this collector
+        $data['paid'] = self::PAID;
+
+        return $data;
     }
 }

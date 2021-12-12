@@ -7,6 +7,10 @@ use Gcr\DataCollector\OrderCreateCollector;
 use Gcr\DataCollector\OrderPaidCollector;
 use \Order;
 use \PrestaShop\PrestaShop\Adapter\MailTemplate\MailPartialTemplateRenderer;
+use \AddressFormat;
+use \Tools;
+use \Product;
+use \Address;
 
 abstract class DataCollectorBase implements DataCollectorInterface
 {
@@ -22,8 +26,7 @@ abstract class DataCollectorBase implements DataCollectorInterface
     /** @var Order */
     protected $order;
 
-    // TODO: opisać to
-    /** @var array */
+    /** @var array Products from database, not from $order->getProducts() */
     protected $realProducts = [];
 
     /** @var MailPartialTemplateRenderer */
@@ -118,11 +121,11 @@ abstract class DataCollectorBase implements DataCollectorInterface
         return $this->realProducts[$idProduct];
     }
 
-    protected function getMessage(int $idOrder, int $idState, int $idLang)//: string
+    protected function getMessage(int $idState, int $idLang)//: string
     {
         $message = '';
         $orderState = new \OrderState($idState);
-        $template = $orderState->template[$idLang]; // TODO: usunąć. wartość to np. 'bankwire'
+        $template = $orderState->template[$idLang]; // TODO: usunąć koment. wartość to np. 'bankwire'
         if (empty($template)) {
             return $message;
         }
@@ -170,10 +173,10 @@ abstract class DataCollectorBase implements DataCollectorInterface
                 'utf-8'
             )
         );
-        // dump($templateTxt); die;
 
         $message = strtr($templateTxt, $templateVars);
-        dump($message); die;
+
+        return $message;
     }
 
     protected function getTemplateBasePath($isoTemplate, $theme): string
@@ -240,11 +243,103 @@ abstract class DataCollectorBase implements DataCollectorInterface
             null,
             true
         );
-        $templateVars = array_merge($templateVars, $extraTemplateVars);
 
-        // TODO: dodatkowe pola?
+        $templateVars = array_merge($templateVars, $extraTemplateVars);
+        $templateVars = array_merge($templateVars, $this->getAdditionalTemplateVars());
 
         return $templateVars;
+    }
+
+    public function getAdditionalTemplateVars()
+    {
+        return [
+            '{firstname}' => $this->customer->firstname,
+            '{lastname}' => $this->customer->lastname,
+            '{email}' => $this->customer->email,
+            '{delivery_block_txt}' => $this->getFormatedAddress($this->deliveryAddress, AddressFormat::FORMAT_NEW_LINE),
+            '{invoice_block_txt}' => $this->getFormatedAddress($this->billingAddress, AddressFormat::FORMAT_NEW_LINE),
+            '{delivery_block_html}' => $this->getFormatedAddress($this->deliveryAddress, '<br />', [
+                'firstname' => '<span style="font-weight:bold;">%s</span>',
+                'lastname' => '<span style="font-weight:bold;">%s</span>',
+            ]),
+            '{invoice_block_html}' => $this->getFormatedAddress($this->billingAddress, '<br />', [
+                'firstname' => '<span style="font-weight:bold;">%s</span>',
+                'lastname' => '<span style="font-weight:bold;">%s</span>',
+            ]),
+            '{delivery_company}' => $this->deliveryAddress->company,
+            '{delivery_firstname}' => $this->deliveryAddress->firstname,
+            '{delivery_lastname}' => $this->deliveryAddress->lastname,
+            '{delivery_address1}' => $this->deliveryAddress->address1,
+            '{delivery_address2}' => $this->deliveryAddress->address2,
+            '{delivery_city}' => $this->deliveryAddress->city,
+            '{delivery_postal_code}' => $this->deliveryAddress->postcode,
+            '{delivery_country}' => $this->deliveryAddress->country,
+            '{delivery_state}' => $this->deliveryAddress->id_state ? $this->deliveryState->name : '',
+            '{delivery_phone}' => ($this->deliveryAddress->phone)
+                ? $this->deliveryAddress->phone
+                : $this->deliveryAddress->phone_mobile,
+            '{delivery_other}' => $this->deliveryAddress->other,
+            '{invoice_company}' => $this->billingAddress->company,
+            '{invoice_vat_number}' => $this->billingAddress->vat_number,
+            '{invoice_firstname}' => $this->billingAddress->firstname,
+            '{invoice_lastname}' => $this->billingAddress->lastname,
+            '{invoice_address2}' => $this->billingAddress->address2,
+            '{invoice_address1}' => $this->billingAddress->address1,
+            '{invoice_city}' => $this->billingAddress->city,
+            '{invoice_postal_code}' => $this->billingAddress->postcode,
+            '{invoice_country}' => $this->billingAddress->country,
+            '{invoice_state}' => $this->billingAddress->id_state ? $this->billingState->name : '',
+            '{invoice_phone}' => ($this->billingAddress->phone)
+                ? $this->billingAddress->phone
+                : $this->billingAddress->phone_mobile,
+            '{invoice_other}' => $this->billingAddress->other,
+            '{order_name}' => $this->order->getUniqReference(),
+            '{id_order}' => $this->order->id,
+            '{date}' => Tools::displayDate(date('Y-m-d H:i:s'), null, 1),
+            '{carrier}' => ! isset($this->carrier->name) ? '' : $this->carrier->name,
+            '{payment}' => Tools::substr($this->order->payment, 0, 255),
+            '{products}' => $this->getProductsHtml($this->getProductVarTplList($this->order)), // TODO: kosz?
+            '{products_txt}' => $this->getProductsTxt($this->getProductVarTplList($this->order)),
+            '{total_paid}' => Tools::getContextLocale($this->context)->formatPrice(
+                $this->order->total_paid,
+                $this->context->currency->iso_code
+            ),
+            '{total_products}' => Tools::getContextLocale($this->context)->formatPrice(
+                Product::getTaxCalculationMethod() == PS_TAX_EXC
+                    ? $this->order->total_products
+                    : $this->order->total_products_wt,
+                $this->context->currency->iso_code
+            ),
+            '{total_discounts}' => Tools::getContextLocale($this->context)->formatPrice(
+                $this->order->total_discounts,
+                $this->context->currency->iso_code
+            ),
+            '{total_shipping}' => Tools::getContextLocale($this->context)->formatPrice(
+                $this->order->total_shipping,
+                $this->context->currency->iso_code
+            ),
+            '{total_shipping_tax_excl}' => Tools::getContextLocale($this->context)->formatPrice(
+                $this->order->total_shipping_tax_excl,
+                $this->context->currency->iso_code
+            ),
+            '{total_shipping_tax_incl}' => Tools::getContextLocale($this->context)->formatPrice(
+                $this->order->total_shipping_tax_incl,
+                $this->context->currency->iso_code)
+                ,
+            '{total_wrapping}' => Tools::getContextLocale($this->context)->formatPrice(
+                $this->order->total_wrapping,
+                $this->context->currency->iso_code
+            ),
+            '{total_tax_paid}' => Tools::getContextLocale($this->context)->formatPrice(
+                ($this->order->total_paid_tax_incl - $this->order->total_paid_tax_excl),
+                $this->context->currency->iso_code
+            ),
+        ];
+    }
+
+    protected function getFormatedAddress(Address $the_address, $line_sep, $fields_style = [])
+    {
+        return AddressFormat::generateAddress($the_address, ['avoid' => []], $line_sep, ' ', $fields_style);
     }
 
     protected function getTemplateRenderer()
@@ -256,6 +351,9 @@ abstract class DataCollectorBase implements DataCollectorInterface
         return $this->templateRenderer;
     }
 
+    /**
+     * Returns list of products (for message).
+     */
     protected function getProductsTxt(array $productVarTplList)
     {
         $templateRenderer = $this->getTemplateRenderer();
@@ -263,6 +361,7 @@ abstract class DataCollectorBase implements DataCollectorInterface
         return $templateRenderer->render('order_conf_product_list.txt', $this->context->language, $productVarTplList);
     }
 
+    // TODO: kosz?
     protected function getProductsHtml(array $productVarTplList)
     {
         $templateRenderer = $this->getTemplateRenderer();

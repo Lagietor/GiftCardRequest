@@ -22,7 +22,7 @@ CREATE TABLE ps_giftcardrequest_data (
     id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
     id_order int NOT NULL,
     data text NOT NULL,
-    sending_date text NOT NULL   
+    date_add datetime NOT NULL
 )
 
 CREATE TABLE ordercreatedata (

@@ -1,6 +1,6 @@
 <?php
 
-class GcrWebHook extends ObjectModel
+class GcrWebHook extends \ObjectModel
 {
     /** @var string */
     private const TABLE_WEBHOOK_STATE = 'giftcardrequest_webhook_order_state';

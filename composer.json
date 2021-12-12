@@ -5,5 +5,8 @@
             "Model/GcrRequestData.php"
         ],
         "psr-4": {"Gcr\\": "classes/"}
+    },
+    "require": {
+        "php-curl-class/php-curl-class": "^9.5"
     }
 }

@@ -16,12 +16,20 @@ class ComposerStaticInit03af49956f7d47d5411e4e607f8dbb7a
         array (
             'Gcr\\' => 4,
         ),
+        'C' => 
+        array (
+            'Curl\\' => 5,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'Gcr\\' => 
         array (
             0 => __DIR__ . '/../..' . '/classes',
+        ),
+        'Curl\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/php-curl-class/php-curl-class/src/Curl',
         ),
     );
 

@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Gcr\\' => array($baseDir . '/classes'),
+    'Curl\\' => array($vendorDir . '/php-curl-class/php-curl-class/src/Curl'),
 );

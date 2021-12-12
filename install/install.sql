@@ -18,6 +18,13 @@ CREATE TABLE `ps_giftcardrequest_webhook_order_state` (
  PRIMARY KEY (`id_giftcardrequest_webhook`,`id_order_state`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
 
+CREATE TABLE `ps_giftcardrequest_data` (
+    `id_giftcardrequest_data` int PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    `id_order` int NOT NULL,
+    `data_collector` varchar(100) NOT NULL,
+    `data` text NOT NULL,
+    `date_add` datetime NOT NULL
+)
 
 CREATE TABLE ordercreatedata (
     order_id int PRIMARY KEY AUTO_INCREMENT NOT NULL,

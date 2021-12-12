@@ -15,4 +15,5 @@ interface DataCollectorInterface
     public const FREE_SHIPPING_MIN_PROD_NB = 4;
 
     public function getData(): array;
+    public function getName(): string;
 }

@@ -377,7 +377,7 @@ abstract class DataCollectorBase implements DataCollectorInterface
             $price = \Product::getPriceStatic(
                 (int) $product['id_product'],
                 false,
-                ($product['id_product_attribute'] ? (int) $product['id_product_attribute'] : null),
+                (isset($product['id_product_attribute']) ? (int)($product['id_product_attribute']) : null),
                 6,
                 null,
                 false,
@@ -398,7 +398,7 @@ abstract class DataCollectorBase implements DataCollectorInterface
             $price_wt = \Product::getPriceStatic(
                 (int) $product['id_product'],
                 true,
-                ($product['id_product_attribute'] ? (int) $product['id_product_attribute'] : null),
+                (isset($product['id_product_attribute']) ? (int)($product['id_product_attribute']) : null),
                 2,
                 null,
                 false,

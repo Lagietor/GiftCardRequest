@@ -135,8 +135,7 @@ class GiftCardRequest extends Module
 
     public function hookActionOrderStatusPostUpdate($params)
     {
-        // TODO: usunąć return po utworzeniu tabel z danymi
-        return;
+        // TODO: usunąć return po utworzeniu tabel z danym
 
         $controller = $this->getHookController('ActionOrderStatusPostUpdate');
         return $controller->run($params);

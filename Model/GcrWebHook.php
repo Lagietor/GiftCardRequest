@@ -6,7 +6,7 @@ class GcrWebHook extends \ObjectModel
     private const TABLE_WEBHOOK_STATE = 'giftcardrequest_webhook_order_state';
 
     /** @var int */
-    public $id;
+    public $id_giftcardrequest_webhook;
 
     /** @var string */
     public $url;

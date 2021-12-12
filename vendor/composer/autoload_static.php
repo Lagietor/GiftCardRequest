@@ -8,6 +8,7 @@ class ComposerStaticInit03af49956f7d47d5411e4e607f8dbb7a
 {
     public static $files = array (
         '897632f4a070213431597053c607ac41' => __DIR__ . '/../..' . '/Model/GcrWebHook.php',
+        '33f68f079fca0477ee1f92394d834f74' => __DIR__ . '/../..' . '/Model/GcrRequestData.php',
     );
 
     public static $prefixLengthsPsr4 = array (

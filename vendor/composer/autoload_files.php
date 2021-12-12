@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     '897632f4a070213431597053c607ac41' => $baseDir . '/Model/GcrWebHook.php',
+    '33f68f079fca0477ee1f92394d834f74' => $baseDir . '/Model/GcrRequestData.php',
 );

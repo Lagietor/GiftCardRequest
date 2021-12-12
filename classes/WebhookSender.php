@@ -4,6 +4,7 @@ namespace Gcr;
 
 use Gcr\Core\DataCollectorBase;
 use Gcr\Core\DataCollectorInterface;
+use GcrRequestData;
 use GcrWebHook;
 
 class WebhookSender
@@ -42,6 +43,20 @@ class WebhookSender
 
         $this->data = $this->dataCollector->getData();
 
+        // TODO: zapisać obiekt i go potem wysłać
+        $reqData = new GcrRequestData();
+        $reqData->id_order = $this->idOrder;
+        $reqData->data_collector = $this->dataCollector->getName();
+        $reqData->data = 'baz';
+
+        if (! $reqData->save()) {
+            // TODO: wyjątek
+        }
+
+        // TODO: zaimplementować
+        $this->send($reqData->id);
+
+        // TODO: przenieść do send()
         $this->headers = $this->getHeaders();
     }
 

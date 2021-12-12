@@ -14,6 +14,11 @@ class OrderCreateCollector extends DataCollectorBase
         getData as protected getDataTrait;
     }
 
+    public function getName(): string
+    {
+        return 'order.create';
+    }
+
     public function getData(): array
     {
         $data = $this->getDataTrait();

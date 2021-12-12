@@ -13,6 +13,11 @@ class OrderPaidCollector extends DataCollectorBase
         getData as protected getDataTrait;
     }
 
+    public function getName(): string
+    {
+        return 'order.paid';
+    }
+
     public function getData(): array
     {
         $data = $this->getDataTrait();

@@ -21,7 +21,9 @@ CREATE TABLE `ps_giftcardrequest_webhook_order_state` (
 CREATE TABLE `ps_giftcardrequest_data` (
     `id_giftcardrequest_data` int PRIMARY KEY AUTO_INCREMENT NOT NULL,
     `id_order` int NOT NULL,
+    `id_webhook` int NOT NULL,
     `data_collector` varchar(100) NOT NULL,
+    `checksum` char(40) NOT NULL,
     `data` text NOT NULL,
     `date_add` datetime NOT NULL
 )

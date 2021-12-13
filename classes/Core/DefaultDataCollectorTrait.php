@@ -137,7 +137,7 @@ trait DefaultDataCollectorTrait
             'currency_rate' => 1,
             // 'paid' => 0.0, // TODO: dla nowego 0, dla opłaconego - sum
             'paid' => 0, // must be set in data collector
-            'ip_address' => $this->getUserIP(), //TODO: dla aktualizacji płatności, pobrać IP z tworzenia
+            'ip_address' => '', // must be set in data collector
 
             'discount_client' => $this->getDiscountClient(),
             'discount_group' => $this->getPercentDiscountGroup(),

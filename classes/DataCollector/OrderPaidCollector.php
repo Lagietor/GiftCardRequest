@@ -4,6 +4,7 @@ namespace Gcr\DataCollector;
 
 use Gcr\Core\DataCollectorBase;
 use Gcr\Core\DefaultDataCollectorTrait;
+use GcrRequestData;
 
 class OrderPaidCollector extends DataCollectorBase
 {
@@ -24,7 +25,15 @@ class OrderPaidCollector extends DataCollectorBase
 
         // set values for this collector
         $data['paid'] = $data['sum'];
+        $data['ip_address'] = $this->getIpAddressFromOrderCreate();
 
         return $data;
+    }
+
+    private function getIpAddressFromOrderCreate(): string
+    {
+        $data = GcrRequestData::getDataForOrderPaid($this->idOrder);
+
+        return isset($data['ip_address']) ? $data['ip_address'] : '';
     }
 }

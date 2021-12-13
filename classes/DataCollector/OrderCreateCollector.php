@@ -25,6 +25,7 @@ class OrderCreateCollector extends DataCollectorBase
 
         // set values for this collector
         $data['paid'] = self::PAID;
+        $data['ip_address'] = $this->getUserIP();
 
         return $data;
     }

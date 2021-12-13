@@ -7,6 +7,7 @@ use Gcr\Core\DataCollectorBase;
 use Gcr\Core\DataCollectorInterface;
 use GcrRequestData;
 use GcrWebHook;
+use Validate;
 
 class WebhookSender
 {
@@ -25,6 +26,9 @@ class WebhookSender
     /** @var array */
     private $data = [];
 
+    /** @var GcrRequestData */
+    private $reqData;
+
     public function __construct(GcrWebHook $webhook, int $idOrder)
     {
         $this->webhook = $webhook;
@@ -33,7 +37,7 @@ class WebhookSender
         $this->init();
     }
 
-    private function init()
+    private function init(): void
     {
         $this->dataCollector = DataCollectorBase::getDataCollector(
             $this->webhook->data_collector,
@@ -47,22 +51,25 @@ class WebhookSender
         // TODO: zapisać obiekt i go potem wysłać
         $reqData = new GcrRequestData();
         $reqData->id_order = $this->idOrder;
-        $reqData->data_collector = $this->dataCollector->getName();
-        $reqData->data = 'baz';
+        $reqData->id_webhook = $this->webhook->id;
+        $reqData->data_collector = $this->webhook->data_collector;
+        $reqData->data = json_encode($this->data);
 
         if (! $reqData->save()) {
             // TODO: wyjątek
         }
 
-        // TODO: zaimplementować
-        // $this->send($reqData->id);
-
-        // TODO: przenieść do send()
-        $this->prepareHeaders();
+        $this->reqData = $reqData;
     }
 
     public function send()
     {
+        if (! Validate::isLoadedObject($this->reqData)) {
+            // TODO: wyjątek
+            dump('nie ma takiego GcrRequestData'); die;
+        }
+
+        $this->prepareHeaders();
         $curl = new Curl();
 
         foreach ($this->headers as $name => $value) {

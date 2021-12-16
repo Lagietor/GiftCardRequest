@@ -1,0 +1,37 @@
+<?php
+
+global $_MODULE;
+$_MODULE = array();
+$_MODULE['<{giftcardrequest}prestashop>giftcardrequest_bc32e29e8d32cc4a7266ad3d20d942d9'] = 'GiftCard WebHooks Requests';
+$_MODULE['<{giftcardrequest}prestashop>giftcardrequest_c0c542af6dabce4abf36dc0585d47f7c'] = 'Umożliwia wysłanie webhooka ze szczegółami zamówienia';
+$_MODULE['<{giftcardrequest}prestashop>giftcardrequest_bb8956c67b82c7444a80c6b2433dd8b4'] = 'Czy na pewno chcesz odinstalować ten moduł?';
+$_MODULE['<{giftcardrequest}prestashop>giftcardrequest_3a8b8132519810a3b842c7a54d37e418'] = 'WebHooks';
+$_MODULE['<{giftcardrequest}prestashop>giftcardrequest_765a223076ac8bc1b246a53beb699f38'] = 'WebHooks - Dane';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookdatacontroller_2541dd28c91dc0824795e9fbc6913da9'] = 'WebHook - Historia (ID: %s)';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookdatacontroller_1955d01a862a21763c53fcdc09798c06'] = 'Webhook wysłany ponownie';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookdatacontroller_af52202eb8bdb2384d272ddbaa7d9129'] = 'Ponowne wysłanie webhooka nie powiodło się. Szczegóły w logach PrestaShop.';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookdatacontroller_94966d90747b97d1f0f206c98a8b1ac3'] = 'Wyślij';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookdatacontroller_07fc7dc79c8046bb36d97b4332dab1ca'] = 'Powrót do listy';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookdatacontroller_b718adec73e04ce3ec720dd11a06a308'] = 'ID';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookdatacontroller_44749712dbec183e983dcd78a7736c41'] = 'Data';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookdatacontroller_e6b391a8d2c4d45902a23a8b6585703d'] = 'URL';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookdatacontroller_2f704538f6c9d6459a97314be98124e2'] = 'Data Collector';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookdatacontroller_89f37066d4c35e04431160d607fb2b46'] = 'Suma kontrolna';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookdatacontroller_d64ed3e9c10229648e069f56e32f4c8e'] = 'Odpowiedź';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_16d2b386b2034b9488996466aaae0b57'] = 'Historia';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_41380f8a626e57627bf25d52f2d7ea13'] = 'Dodaj webhook';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_b718adec73e04ce3ec720dd11a06a308'] = 'ID';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_e6b391a8d2c4d45902a23a8b6585703d'] = 'URL';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_897356954c2cd3d41b221e3f24f99bba'] = 'Klucz';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_2f704538f6c9d6459a97314be98124e2'] = 'Data Collector';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_4d3d769b812b6faa6b76e1a8abaece2d'] = 'Aktywny';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_980310da5d94b91918f46b5c0c54c6f3'] = 'WebHook';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_3b3d06023f6353f8fd05f859b298573e'] = 'URL:';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_efeb782bc428be5cef6e02a858749ee5'] = 'Klucz:';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_00d23a76e43b46dae9ec7aa9dcbebb32'] = 'Aktywny';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_b9f5c797ebbf55adccdd8539a65a0241'] = 'Nieaktywny';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_b8464cdd84b5f068ad72bf5c4f32163d'] = 'Statusy';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_cb31834b8b2caf5d8a1522d7535af909'] = 'Webhook zostanie wysłany po zmianie statusu zamówienia na jeden z wybranych';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_a6cfa44cd146f9e464378c82ef741df9'] = 'Data Collector';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_a61a96cd8e660cfc38d0b8aacd5305df'] = 'Brak';
+$_MODULE['<{giftcardrequest}prestashop>admingcrwebhookcontroller_c9cc8cce247e49bae79f15173ce97354'] = 'Zapisz';

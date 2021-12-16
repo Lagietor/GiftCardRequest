@@ -110,7 +110,7 @@ class AdminGcrWebhookDataController extends ModuleAdminController
                 'href' => $this->context->link->getAdminLink('AdminGcrWebhook'),
                 'desc' => $this->l('Back to the list'),
                 'icon' => 'process-icon-back'
-        ];
+            ];
         }
 
         parent::initPageHeaderToolbar();

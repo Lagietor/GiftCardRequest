@@ -63,11 +63,11 @@ abstract class DataCollectorBase implements DataCollectorInterface
         return [
             [
                 'id_option' => 'order.create',
-                'name' => 'New order',
+                'name' => 'order.create',
             ],
             [
                 'id_option' => 'order.paid',
-                'name' => 'Order paid',
+                'name' => 'order.paid',
             ],
         ];
     }

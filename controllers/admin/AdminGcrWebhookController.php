@@ -42,6 +42,20 @@ class AdminGcrWebhookController extends ModuleAdminController
         return $tpl->fetch();
     }
 
+    public function initPageHeaderToolbar()
+    {
+        if (empty($this->display)) {
+            $this->page_header_toolbar_btn['foo'] = [
+                'href' => $this->context->link->getAdminLink('AdminGcrWebhook')
+                    . '&addgiftcardrequest_webhook',
+                'desc' => $this->l('Add new webhook'),
+                'icon' => 'process-icon-plus'
+            ];
+        }
+
+        parent::initPageHeaderToolbar();
+    }
+
     public function renderList()
     {
         $this->addRowAction('edit');

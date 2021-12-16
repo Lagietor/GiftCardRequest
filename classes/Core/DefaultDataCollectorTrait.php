@@ -1,10 +1,19 @@
 <?php
 
+/**
+ * BonCard GiftCard Webhook Request.
+ *
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ *
+ * @package   Giftcard
+ * @version   1.0.0
+ * @copyright Copyright (c) 2021 BonCard Polska Sp. z o.o. (https://www.boncard.pl)
+ * @license http://opensource.org/licenses/GPL-3.0 Open Software License (GPL 3.0)
+ */
+
 namespace Gcr\Core;
 
-use Gcr\Core\DataCollectorBase;
 use \Module;
-use \Tools;
 use \Customer;
 use \DbQuery;
 use \Order;
@@ -17,7 +26,6 @@ use \State;
 use \OrderState;
 use \Db;
 use \Configuration;
-use \AddressFormat;
 use \DateTime;
 use \DateInterval;
 use \Validate;
@@ -86,31 +94,66 @@ trait DefaultDataCollectorTrait
 
     public function getData(): array
     {
-        // TODO: walidować czy poprawnie pobrano, jak nie to wyjątek (zaimplementować wyjątki :P)
-
         $this->readProductsFromOrder();
         $this->customer = new Customer($this->order->id_customer);
+        if (! Validate::isLoadedObject($this->customer)) {
+            throw new \Exception('Could not load Customer - ID: ' . $this->order->id_customer);
+        }
         $this->orderStatusInfo = $this->getOrderStatusInfo();
 
         $this->carrier = new Carrier($this->order->id_carrier);
+        if (! Validate::isLoadedObject($this->carrier)) {
+            throw new \Exception('Could not load Carrier - ID: ' . $this->order->id_carrier);
+        }
         $this->taxRuleGroup = new TaxRulesGroup(
             $this->carrier->getIdTaxRulesGroupByIdCarrier($this->order->id_carrier)
         );
+        if (! Validate::isLoadedObject($this->taxRuleGroup)) {
+            throw new \Exception('Could not load TaxRuleGroup - ID Carrierer: ' . $this->order->id_carrier);
+        }
 
         $this->billingAddress = new Address($this->order->id_address_invoice);
+        if (! Validate::isLoadedObject($this->billingAddress)) {
+            throw new \Exception('Could not load billing Address - ID: ' . $this->order->id_address_invoice);
+        }
         $this->billingCountry = new Country($this->billingAddress->id);
+        if (! Validate::isLoadedObject($this->billingCountry)) {
+            throw new \Exception('Could not load billing Country - ID: ' . $this->billingAddress->id);
+        }
         $this->billingState = $this->billingAddress->id_state
             ? new State((int) $this->billingAddress->id_state)
             : false;
+        if ($this->billingState) {
+            if (! Validate::isLoadedObject($this->billingState)) {
+                throw new \Exception('Could not load billing Country - ID: ' . $this->billingAddress->id_state);
+            }
+        }
 
         $this->deliveryAddress = new Address($this->order->id_address_delivery);
+        if (! Validate::isLoadedObject($this->deliveryAddress)) {
+            throw new \Exception('Could not load delivery Address - ID: ' . $this->order->id_address_delivery);
+        }
         $this->deliveryCountry = new Country($this->deliveryAddress->id);
+        if (! Validate::isLoadedObject($this->deliveryCountry)) {
+            throw new \Exception('Could not load delivery Country - ID: ' . $this->deliveryAddress->id);
+        }
         $this->deliveryState = $this->deliveryAddress->id_state
             ? new State((int) $this->deliveryAddress->id_state)
             : false;
+        if ($this->deliveryState) {
+            if (! Validate::isLoadedObject($this->deliveryState)) {
+                throw new \Exception('Could not load delivery Country - ID: ' . $this->deliveryAddress->id_state);
+            }
+        }
 
         $this->state = new OrderState($this->order->current_state);
+        if (! Validate::isLoadedObject($this->state)) {
+            throw new \Exception('Could not load OrdeState - ID: ' . $this->order->current_state);
+        }
         $this->payment = Module::getInstanceById(Module::getModuleIdByName($this->order->module));
+        if (! Validate::isLoadedObject($this->payment)) {
+            throw new \Exception('Could not load payment Module - Name: ' . $this->order->module);
+        }
 
         $data = [
             'order_id' => $this->order->reference,
@@ -135,7 +178,6 @@ trait DefaultDataCollectorTrait
             'currency_id' => $this->order->id_currency,
             'currency_name' => 'PLN', // only PLN supported
             'currency_rate' => 1,
-            // 'paid' => 0.0, // TODO: dla nowego 0, dla opłaconego - sum
             'paid' => 0, // must be set in data collector
             'ip_address' => '', // must be set in data collector
 
@@ -143,7 +185,6 @@ trait DefaultDataCollectorTrait
             'discount_group' => $this->getPercentDiscountGroup(),
             'discount_levels' => 0,
             'discount_code' => 0,  // will be set later
-            // TODO: ogarnąć podatki (chyba przy produktach)
             'shipping_vat' => $this->carrier->getIdTaxRulesGroupByIdCarrier($this->order->id_carrier),
             'shipping_vat_value' => round(
                 $this->order->total_shipping_tax_incl - $this->order->total_shipping_tax_excl,
@@ -161,7 +202,7 @@ trait DefaultDataCollectorTrait
             'billingAddress.firstname' => $this->billingAddress->firstname,
             'billingAddress.lastname' => $this->billingAddress->lastname,
             'billingAddress.company' => $this->billingAddress->company,
-            'billingAddress.tax_id' => $this->billingAddress->var_number,
+            'billingAddress.tax_id' => $this->billingAddress->vat_number,
             'billingAddress.pesel' => isset($this->billingAddress->pesel) ? $this->billingAddress->pesel : '',
             'billingAddress.city' => $this->billingAddress->city,
             'billingAddress.postcode' => $this->billingAddress->postcode,
@@ -180,7 +221,7 @@ trait DefaultDataCollectorTrait
             'deliveryAddress.firstname' => $this->deliveryAddress->firstname,
             'deliveryAddress.lastname' => $this->deliveryAddress->lastname,
             'deliveryAddress.company' => $this->deliveryAddress->company,
-            'deliveryAddress.tax_id' => $this->deliveryAddress->var_number,
+            'deliveryAddress.tax_id' => $this->deliveryAddress->vat_number,
             'deliveryAddress.pesel' => isset($this->deliveryAddress->pesel) ? $this->deliveryAddress->pesel : '',
             'deliveryAddress.city' => $this->deliveryAddress->city,
             'deliveryAddress.postcode' => $this->deliveryAddress->postcode,
@@ -203,7 +244,7 @@ trait DefaultDataCollectorTrait
             'shipping.max_weight' => (float)$this->carrier->max_weight,
             'shipping.min_weight' => 0.0,
             'shipping.free_shipping' => $this->isFreeShipping(),
-            'shipping.order' => '', // TODO: fix
+            'shipping.order' => $this->carrier->position,
             'shipping.is_default' => (int)($this->carrier->id == Configuration::get('PS_CARRIER_DEFAULT')),
             'shipping.pkwiu' => '',
             'shipping.mobile' => 1,
@@ -215,13 +256,13 @@ trait DefaultDataCollectorTrait
             'status.color' => $this->state->color,
             'status.type' => self::STATUS_TYPE,
             'status.email_change' => self::STATUS_EMAIL_CHANGE,
-            'status.order' => '', // TODO: fix
+            'status.order' => $this->order->current_state,
             'status.name' => $this->state->name[$this->defaultIdLang],
 
             'message' => $this->getMessage($this->orderStatusInfo['id_order_state'], $this->defaultIdLang),
 
             'payment.payment_id' => $this->payment->id,
-            'payment.order' => '', // TODO: todo
+            'payment.order' => $this->getPaymentOrder(),
             'payment.name' => $this->payment->name,
             'payment.title' => $this->payment->displayName,
             'payment.description' => '', $this->payment->description,
@@ -234,7 +275,7 @@ trait DefaultDataCollectorTrait
         // set 'discount_code' value
         if (! empty($this->products)) {
             $firstProduct = reset($this->products);
-            $data['discount_code'] = floor($data['product' . (int)$firstProduct['id_product']]['discount_perc']);
+            $data['discount_code'] = floor($data['product' . (int)$firstProduct['id_product'] . '.id']['discount_perc']);
         }
 
         $data['additional_fields'] = [];
@@ -292,11 +333,14 @@ trait DefaultDataCollectorTrait
         foreach ($inOrder as $p) {
             $idProduct = (int)$p['id_product'];
             $product = $this->getRealProduct($idProduct);
+            $IdProductAttr = isset($p['product_attribute_id'])
+                ? (int)$p['product_attribute_id']
+                : 0;
 
             $data["product$idProduct.id"] = $idProduct;
             $data["product$idProduct.order_id"] = $order->reference;
             $data["product$idProduct.product_id"] = $p['reference'];
-            $data["product$idProduct.stock_id"] = ''; // TODO: todo
+            $data["product$idProduct.stock_id"] = $IdProductAttr;
             $data["product$idProduct.price"] = $p['product_price_wt'];
             $data["product$idProduct.discount_perc"] = $this->getProductPercentDiscount($idProduct);
             $data["product$idProduct.quantity"] = $p['product_quantity'];
@@ -307,7 +351,7 @@ trait DefaultDataCollectorTrait
             $data["product$idProduct.tax"] = $p['tax_name'];
             $data["product$idProduct.tax_value"] = round($p['product_price_wt'] - $p['product_price'], self::PRECISION);
             $data["product$idProduct.unit"] = (string)($product->unity);
-            $data["product$idProduct.option"] = '';
+            $data["product$idProduct.option"] = $this->getProductOption($IdProductAttr);
             $data["product$idProduct.unit_fp"] = self::PRODUCT_UNIT_FP;
             $data["product$idProduct.weight"] = round($p['weight'], self::PRECISION);
         }
@@ -446,5 +490,31 @@ trait DefaultDataCollectorTrait
         }
 
         return str_replace('@', $orderCarrierer->tracking_number, $this->carrier->url);
+    }
+
+    protected function getPaymentOrder(): int
+    {
+        $sql = 'SELECT `position`
+            FROM `' . _DB_PREFIX_ . 'hook_module`
+            WHERE `id_hook` = (
+                SELECT `id_hook`
+                FROM `' . _DB_PREFIX_ . 'hook`
+                WHERE `name` = "paymentOptions")
+            AND id_module = ' . $this->payment->id;
+
+        return (int)(Db::getInstance()->getValue($sql));
+    }
+
+    protected function getProductOption(int $idAttr): string
+    {
+        $sql = 'SELECT `name`
+            FROM `' . _DB_PREFIX_ . 'attribute_lang`
+            WHERE `id_attribute` = (
+                SELECT `id_attribute`
+                FROM `' . _DB_PREFIX_ . 'product_attribute_combination`
+                WHERE `id_product_attribute` = ' . $idAttr . '
+            )';
+
+        return (string)(Db::getInstance()->getValue($sql));
     }
 }

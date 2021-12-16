@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * BonCard GiftCard Webhook Request.
+ *
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ *
+ * @package   Giftcard
+ * @version   1.0.0
+ * @copyright Copyright (c) 2021 BonCard Polska Sp. z o.o. (https://www.boncard.pl)
+ * @license http://opensource.org/licenses/GPL-3.0 Open Software License (GPL 3.0)
+ */
+
 namespace Gcr\Core;
 
 use Gcr\Core\DataCollectorInterface;
@@ -121,11 +132,11 @@ abstract class DataCollectorBase implements DataCollectorInterface
         return $this->realProducts[$idProduct];
     }
 
-    protected function getMessage(int $idState, int $idLang)//: string
+    protected function getMessage(int $idState, int $idLang)
     {
         $message = '';
         $orderState = new \OrderState($idState);
-        $template = $orderState->template[$idLang]; // TODO: usunąć koment. wartość to np. 'bankwire'
+        $template = $orderState->template[$idLang];
         if (empty($template)) {
             return $message;
         }
@@ -158,11 +169,9 @@ abstract class DataCollectorBase implements DataCollectorInterface
             }
         }
 
-        // TODO: fix - ogarnąć całą metodę
         if (! $templateExists) {
-            dump('brak templatki'); die;
+            throw new \Exception('Could not find template for message');
         }
-
 
         $templateVars = $this->getDefaultTemplateVars($idLang);
 
@@ -298,7 +307,7 @@ abstract class DataCollectorBase implements DataCollectorInterface
             '{date}' => Tools::displayDate(date('Y-m-d H:i:s'), null, 1),
             '{carrier}' => ! isset($this->carrier->name) ? '' : $this->carrier->name,
             '{payment}' => Tools::substr($this->order->payment, 0, 255),
-            '{products}' => $this->getProductsHtml($this->getProductVarTplList($this->order)), // TODO: kosz?
+            '{products}' => '',
             '{products_txt}' => $this->getProductsTxt($this->getProductVarTplList($this->order)),
             '{total_paid}' => Tools::getContextLocale($this->context)->formatPrice(
                 $this->order->total_paid,
@@ -352,7 +361,7 @@ abstract class DataCollectorBase implements DataCollectorInterface
     }
 
     /**
-     * Returns list of products (for message).
+     * Returns TXT list of products (for message).
      */
     protected function getProductsTxt(array $productVarTplList)
     {
@@ -361,7 +370,9 @@ abstract class DataCollectorBase implements DataCollectorInterface
         return $templateRenderer->render('order_conf_product_list.txt', $this->context->language, $productVarTplList);
     }
 
-    // TODO: kosz?
+    /**
+     * Returns HTML list of products (for message).
+     */
     protected function getProductsHtml(array $productVarTplList)
     {
         $templateRenderer = $this->getTemplateRenderer();
@@ -382,7 +393,11 @@ abstract class DataCollectorBase implements DataCollectorInterface
                 null,
                 false,
                 true,
-                $product['cart_quantity'],
+                isset($product['cart_quantity'])
+                    ? $product['cart_quantity']
+                    : (isset($product['product_quantity'])
+                        ? $product['product_quantity']
+                        : 0),
                 false,
                 (int) $this->order->id_customer,
                 (int) $this->order->id_cart,
@@ -392,7 +407,7 @@ abstract class DataCollectorBase implements DataCollectorInterface
                 true,
                 null,
                 true,
-                $product['id_customization']
+                isset($product['id_customization']) ? $product['id_customization'] : null
             );
 
             $price_wt = \Product::getPriceStatic(
@@ -403,7 +418,11 @@ abstract class DataCollectorBase implements DataCollectorInterface
                 null,
                 false,
                 true,
-                $product['cart_quantity'],
+                isset($product['cart_quantity'])
+                    ? $product['cart_quantity']
+                    : (isset($product['product_quantity'])
+                        ? $product['product_quantity']
+                        : 0),
                 false,
                 (int) $this->order->id_customer,
                 (int) $this->order->id_cart,
@@ -413,7 +432,7 @@ abstract class DataCollectorBase implements DataCollectorInterface
                 true,
                 null,
                 true,
-                $product['id_customization']
+                isset($product['id_customization']) ? $product['id_customization'] : null
             );
 
             $product_price = \Product::getTaxCalculationMethod() == PS_TAX_EXC
@@ -422,7 +441,9 @@ abstract class DataCollectorBase implements DataCollectorInterface
 
             $product_var_tpl = [
                 'id_product' => $product['id_product'],
-                'id_product_attribute' => $product['id_product_attribute'],
+                'id_product_attribute' => isset($product['id_product_attribute'])
+                    ? $product['id_product_attribute']
+                    : 0,
                 'reference' => $product['reference'],
                 'name' => $product['product_name'] . (isset($product['attributes'])
                     ? ' - ' . $product['attributes']
@@ -446,6 +467,10 @@ abstract class DataCollectorBase implements DataCollectorInterface
                     . ' ' . $product['unity'];
             } else {
                 $product_var_tpl['unit_price'] = $product_var_tpl['unit_price_full'] = '';
+            }
+
+            if (! isset($product_var_tpl['customization'])) {
+                $product_var_tpl['customization'] = [];
             }
 
             $productVarTplList[] = $product_var_tpl;

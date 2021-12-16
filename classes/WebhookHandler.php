@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * BonCard GiftCard Webhook Request.
+ *
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ *
+ * @package   Giftcard
+ * @version   1.0.0
+ * @copyright Copyright (c) 2021 BonCard Polska Sp. z o.o. (https://www.boncard.pl)
+ * @license http://opensource.org/licenses/GPL-3.0 Open Software License (GPL 3.0)
+ */
+
 namespace Gcr;
 
 use GcrWebHook;
@@ -29,31 +40,5 @@ class WebhookHandler
             );
             $webhookSender->send();
         }
-        die; // TODO: usunąć po ogarnięciu danych i headerów
-    }
-
-    // TODO: move
-    public function sendwebhook(int $webhookId)
-    {
-        dump("Wyślij webhook o takim Id: " . $webhookId);
-        die;
-
-        // $curl = curl_init();
-        // curl_setopt_array($curl, [
-        //     CURLOPT_RETURNTRANSFER => 1,
-        //     CURLOPT_URL => $this->URL,
-        //     CURLOPT_SSL_VERIFYPEER => 0,
-        //     CURLOPT_SSL_VERIFYHOST => 0,
-        //     CURLOPT_CUSTOMREQUEST => 'POST',
-        //     CURLOPT_POST => 1,
-        //     CURLOPT_POSTFIELDS => json_encode($requestData)
-        // ]);
-
-        // $response = curl_exec($curl);
-
-        // $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        // curl_close($curl);
-
-        // return ($http_status == 200) ? $response : false;
     }
 }

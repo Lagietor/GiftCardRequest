@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * BonCard GiftCard Webhook Request.
+ *
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ *
+ * @package   Giftcard
+ * @version   1.0.0
+ * @copyright Copyright (c) 2021 BonCard Polska Sp. z o.o. (https://www.boncard.pl)
+ * @license http://opensource.org/licenses/GPL-3.0 Open Software License (GPL 3.0)
+ */
+
 class GcrWebHook extends \ObjectModel
 {
     /** @var string */
@@ -16,8 +27,6 @@ class GcrWebHook extends \ObjectModel
 
     /** @var string */
     public $data_collector;
-
-    // TODO: format potrzebny? jest jakiś inny niż JSON
 
     /** @var int */
     public $active;
@@ -133,8 +142,13 @@ class GcrWebHook extends \ObjectModel
 
         $webhooks = [];
         foreach ($ids as $id) {
-            // TODO: dodać weryfikację
-            $webhooks[] = new \GcrWebHook($id);
+            $tmpWebhook = new \GcrWebHook($id);
+
+            if (! Validate::isLoadedObject($tmpWebhook)) {
+                continue;
+            }
+
+            $webhooks[] = $tmpWebhook;
         }
 
         return $webhooks;

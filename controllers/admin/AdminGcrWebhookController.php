@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * BonCard GiftCard Webhook Request.
+ *
+ * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
+ *
+ * @package   Giftcard
+ * @version   1.0.0
+ * @copyright Copyright (c) 2021 BonCard Polska Sp. z o.o. (https://www.boncard.pl)
+ * @license http://opensource.org/licenses/GPL-3.0 Open Software License (GPL 3.0)
+ */
+
 class AdminGcrWebhookController extends ModuleAdminController
 {
     public function __construct()
@@ -8,48 +19,63 @@ class AdminGcrWebhookController extends ModuleAdminController
         $this->table = 'giftcardrequest_webhook';
         $this->className = 'GcrWebHook';
         $this->lang = false;
-        // $this->deleted = false; // TODO: co to robi?
         $this->context = Context::getContext();
 
         parent::__construct();
+
+        $this->list_simple_header = true;
+        $this->bulk_actions = [];
+    }
+
+    public function displayHistoryLink($token, $id)
+    {
+        $tpl = $this->createTemplate('list_action_webhook_history.tpl');
+
+        $tpl->assign([
+            'href' => $this->context->link->getAdminLink('AdminGcrWebhookData')
+                . '&giftcardrequest_dataOrderby=date_upd'
+                . '&giftcardrequest_dataOrderway=desc'
+                . '&id_webhook=' . (int)$id,
+            'action' => $this->l('History')
+        ]);
+
+        return $tpl->fetch();
     }
 
     public function renderList()
     {
-        // TODO: dodać rowAction z historią
         $this->addRowAction('edit');
+        $this->addRowAction('history');
         $this->addRowAction('delete');
 
-        $this->fields_list = array(
-            'id_giftcardrequest_webhook' => array(
+        $this->fields_list = [
+            'id_giftcardrequest_webhook' => [
                 'title' => $this->l('ID'),
                 'align' => 'center',
-                'width' => 25
-            ),
-            'url' => array(
+                'width' => 25,
+            ],
+            'url' => [
                 'title' => $this->l('URL'),
                 'width' => 'auto',
-            ),
-            'secure_key' => array(
+            ],
+            'secure_key' => [
                 'title' => $this->l('Key'),
                 'width' => 'auto',
-            ),
-            'data_collector' => array(
+            ],
+            'data_collector' => [
                 'title' => $this->l('Data Collector'),
                 'width' => 'auto',
-            ),
-
-            // TODO: nie działa wł/wył po ajaxie
-            'active' => array(
+            ],
+            'active' => [
                 'title' => $this->l('Active'),
                 'active' => 'status',
                 'type' => 'bool',
                 'class' => 'fixed-width-xs',
                 'align' => 'center',
-                'ajax' => true,
-                'orderby' => false
-            ),
-        );
+                'ajax' => false,
+                'orderby' => false,
+            ],
+        ];
 
         $lists = parent::renderList();
 

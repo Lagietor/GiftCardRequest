@@ -32,6 +32,7 @@ use \Validate;
 use \CartRule;
 use \OrderCarrier;
 use \Cart;
+use stdClass;
 
 trait DefaultDataCollectorTrait
 {
@@ -96,7 +97,7 @@ trait DefaultDataCollectorTrait
         }
     }
 
-    public function getData(): array
+    public function getData(): stdClass
     {
         $this->readProductsFromOrder();
         $this->customer = new Customer($this->order->id_customer);
@@ -164,136 +165,150 @@ trait DefaultDataCollectorTrait
             throw new \Exception('Could not load Cart - ID order: ' . $this->order->id);
         }
 
-        $data = [
-            'order_id' => $this->order->reference,
-            'user_id' => $this->customer->id,
-            'date' => $this->order->date_add,
-            'status_date' => $this->orderStatusInfo['date_add'],
-            'confirm_date' => $this->order->date_add,
-            'delivery_date' => $this->getDeliveryDate(),
-            'status_id' => $this->orderStatusInfo['id_order_state'],
-            'sum' => round($this->order->total_paid_tax_incl, self::PRECISION),
-            'payment_id' => Module::getModuleIdByName($this->order->module),
-            'user_order' => 1, // only register users
-            'shipping_id' => $this->order->id_carrier,
-            'shipping_cost' => round($this->order->total_shipping_tax_incl, self::PRECISION),
-            'email' => $this->customer->email,
-            'delivery_code' => '',
-            'code' => '',
-            'confirm' => 0,
-            'notes' => $this->order->getFirstMessage(),
-            'notes_priv' => '',
-            'notes_pub' => '',
-            'currency_id' => $this->order->id_currency,
-            'currency_name' => 'PLN', // only PLN supported
-            'currency_rate' => 1,
-            'paid' => 0, // must be set in data collector
-            'ip_address' => '', // must be set in data collector
+        $data = new stdClass();
+        $data->order_id = $this->order->reference;
+        $data->user_id = $this->customer->id;
+        $data->date = $this->order->date_add;
+        $data->status_date = $this->orderStatusInfo['date_add'];
+        $data->confirm_date = $this->order->date_add;
+        $data->delivery_date = $this->getDeliveryDate();
+        $data->status_id = $this->orderStatusInfo['id_order_state'];
+        $data->sum = round($this->order->total_paid_tax_incl, self::PRECISION);
+        $data->payment_id = Module::getModuleIdByName($this->order->module);
+        $data->user_order = 1; // only register users
+        $data->shipping_id = $this->order->id_carrier;
+        $data->shipping_cost = round($this->order->total_shipping_tax_incl, self::PRECISION);
+        $data->email = $this->customer->email;
+        $data->delivery_code = '';
+        $data->code = '';
+        $data->confirm = 0;
+        $data->notes = $this->order->getFirstMessage();
+        $data->notes_priv = '';
+        $data->notes_pub = '';
+        $data->currency_id = $this->order->id_currency;
+        $data->currency_name = 'PLN'; // only PLN supported
+        $data->currency_rate = 1;
+        $data->paid = 0; // must be set in data collector
+        $data->ip_address = ''; // must be set in data collector
 
-            'discount_client' => $this->getDiscountClient(),
-            'discount_group' => $this->getPercentDiscountGroup(),
-            'discount_levels' => 0,
-            'discount_code' => 0,  // will be set later
-            'shipping_vat' => $this->carrier->getIdTaxRulesGroupByIdCarrier($this->order->id_carrier),
-            'shipping_vat_value' => round(
-                $this->order->total_shipping_tax_incl - $this->order->total_shipping_tax_excl,
-                self::PRECISION
-            ),
-            'shipping_vat_name' => $this->taxRuleGroup->name,
-            'code_id' => $this->getCodeId(),
-            'lang_id' => $this->order->id_lang,
-            'origin' => 1,
-            'promo_code' => $this->getPromoCode(),
+        $data->discount_client = $this->getDiscountClient();
+        $data->discount_group = $this->getPercentDiscountGroup();
+        $data->discount_levels = 0;
+        $data->discount_code = 0;  // will be set later
+        $data->shipping_vat = $this->carrier->getIdTaxRulesGroupByIdCarrier($this->order->id_carrier);
+        $data->shipping_vat_value = round(
+            $this->order->total_shipping_tax_incl - $this->order->total_shipping_tax_excl,
+            self::PRECISION
+        );
+        $data->shipping_vat_name = $this->taxRuleGroup->name;
+        $data->code_id = $this->getCodeId();
+        $data->lang_id = $this->order->id_lang;
+        $data->origin = 1;
+        $data->promo_code = $this->getPromoCode();
 
-            'billingAddress.address_id' => $this->billingAddress->id,
-            'billingAddress.order_id' => $this->order->reference,
-            'billingAddress.type' => 1,
-            'billingAddress.firstname' => $this->billingAddress->firstname,
-            'billingAddress.lastname' => $this->billingAddress->lastname,
-            'billingAddress.company' => $this->billingAddress->company,
-            'billingAddress.tax_id' => $this->billingAddress->vat_number,
-            'billingAddress.pesel' => isset($this->billingAddress->pesel) ? $this->billingAddress->pesel : '',
-            'billingAddress.city' => $this->billingAddress->city,
-            'billingAddress.postcode' => $this->billingAddress->postcode,
-            'billingAddress.street1' => $this->billingAddress->address1,
-            'billingAddress.street2' => $this->billingAddress->address2,
-            'billingAddress.state' => $this->billingAddress->id_state ? $this->billingState->name : '',
-            'billingAddress.country' => $this->billingAddress->country,
-            'billingAddress.phone' => $this->billingAddress->phone_mobile
-                ? $this->billingAddress->phone_mobile
-                : $this->billingAddress->phone,
-            'billingAddress.country_code' => $this->billingCountry->iso_code,
+        $billingAddress = new stdClass();
+        $billingAddress->address_id = $this->billingAddress->id;
+        $billingAddress->order_id = $this->order->reference;
+        $billingAddress->type = 1;
+        $billingAddress->firstname = $this->billingAddress->firstname;
+        $billingAddress->lastname = $this->billingAddress->lastname;
+        $billingAddress->company = $this->billingAddress->company;
+        $billingAddress->tax_id = $this->billingAddress->vat_number;
+        $billingAddress->pesel = isset($this->billingAddress->pesel) ? $this->billingAddress->pesel : '';
+        $billingAddress->city = $this->billingAddress->city;
+        $billingAddress->postcode = $this->billingAddress->postcode;
+        $billingAddress->street1 = $this->billingAddress->address1;
+        $billingAddress->street2 = $this->billingAddress->address2;
+        $billingAddress->state = $this->billingAddress->id_state ? $this->billingState->name : '';
+        $billingAddress->country = $this->billingAddress->country;
+        $billingAddress->phone = $this->billingAddress->phone_mobile
+            ? $this->billingAddress->phone_mobile
+            : $this->billingAddress->phone;
+        $billingAddress->country_code = $this->billingCountry->iso_code;
 
-            'deliveryAddress.address_id' => $this->deliveryAddress->id,
-            'deliveryAddress.order_id' => $this->order->reference,
-            'deliveryAddress.type' => 2,
-            'deliveryAddress.firstname' => $this->deliveryAddress->firstname,
-            'deliveryAddress.lastname' => $this->deliveryAddress->lastname,
-            'deliveryAddress.company' => $this->deliveryAddress->company,
-            'deliveryAddress.tax_id' => $this->deliveryAddress->vat_number,
-            'deliveryAddress.pesel' => isset($this->deliveryAddress->pesel) ? $this->deliveryAddress->pesel : '',
-            'deliveryAddress.city' => $this->deliveryAddress->city,
-            'deliveryAddress.postcode' => $this->deliveryAddress->postcode,
-            'deliveryAddress.street1' => $this->deliveryAddress->address1,
-            'deliveryAddress.street2' => $this->deliveryAddress->address2,
-            'deliveryAddress.state' => $this->deliveryAddress->id_state ? $this->deliveryState->name : '',
-            'deliveryAddress.country' => $this->deliveryAddress->country,
-            'deliveryAddress.phone' => $this->deliveryAddress->phone_mobile
-                ? $this->deliveryAddress->phone_mobile
-                : $this->deliveryAddress->phone,
-            'deliveryAddress.country_code' => $this->deliveryCountry->iso_code,
+        $data->billingAddress = $billingAddress;
 
-            'shipping.shipping_id' => $this->carrier->id,
-            'shipping.name' => $this->carrier->name,
-            'shipping.description' => '',
-            'shipping.cost' => round($this->order->total_shipping_tax_incl, self::PRECISION),
-            'shipping.depend_on_w' => $this->getShippingDependOn(),
-            'shipping.zone_id' => $this->deliveryCountry->id_zone,
-            'shipping.tax_id' => $this->carrier->getIdTaxRulesGroupByIdCarrier($this->order->id_carrier),
-            'shipping.max_weight' => (float)$this->carrier->max_weight,
-            'shipping.min_weight' => 0.0,
-            'shipping.free_shipping' => $this->isFreeShipping(),
-            'shipping.order' => $this->carrier->position,
-            'shipping.is_default' => (int)($this->carrier->id == Configuration::get('PS_CARRIER_DEFAULT')),
-            'shipping.pkwiu' => '',
-            'shipping.mobile' => 1,
-            'shipping.engine' => '',
-            'shipping.callback_url' => $this->getCallbackUrl(),
+        $deliveryAddress = new stdClass();
+        $deliveryAddress->address_id = $this->deliveryAddress->id;
+        $deliveryAddress->order_id = $this->order->reference;
+        $deliveryAddress->type = 2;
+        $deliveryAddress->firstname = $this->deliveryAddress->firstname;
+        $deliveryAddress->lastname = $this->deliveryAddress->lastname;
+        $deliveryAddress->company = $this->deliveryAddress->company;
+        $deliveryAddress->tax_id = $this->deliveryAddress->vat_number;
+        $deliveryAddress->pesel = isset($this->deliveryAddress->pesel) ? $this->deliveryAddress->pesel : '';
+        $deliveryAddress->city = $this->deliveryAddress->city;
+        $deliveryAddress->postcode = $this->deliveryAddress->postcode;
+        $deliveryAddress->street1 = $this->deliveryAddress->address1;
+        $deliveryAddress->street2 = $this->deliveryAddress->address2;
+        $deliveryAddress->state = $this->deliveryAddress->id_state ? $this->deliveryState->name : '';
+        $deliveryAddress->country = $this->deliveryAddress->country;
+        $deliveryAddress->phone = $this->deliveryAddress->phone_mobile
+            ? $this->deliveryAddress->phone_mobile
+            : $this->deliveryAddress->phone;
+        $deliveryAddress->country_code = $this->deliveryCountry->iso_code;
 
-            'status.status_id' => $this->order->current_state,
-            'status.default' => (int)($this->payment->name == self::PAYMENT_DEFAULT),
-            'status.color' => $this->state->color,
-            'status.type' => self::STATUS_TYPE,
-            'status.email_change' => self::STATUS_EMAIL_CHANGE,
-            'status.order' => $this->order->current_state,
-            'status.name' => $this->state->name[$this->defaultIdLang],
+        $data->deliveryAddress = $deliveryAddress;
 
-            'message' => $this->getMessage($this->orderStatusInfo['id_order_state'], $this->defaultIdLang),
+        $shipping = new stdClass();
+        $shipping->shipping_id = $this->carrier->id;
+        $shipping->name = $this->carrier->name;
+        $shipping->description = '';
+        $shipping->cost = round($this->order->total_shipping_tax_incl, self::PRECISION);
+        $shipping->depend_on_w = $this->getShippingDependOn();
+        $shipping->zone_id = $this->deliveryCountry->id_zone;
+        $shipping->tax_id = $this->carrier->getIdTaxRulesGroupByIdCarrier($this->order->id_carrier);
+        $shipping->max_weight = (float)$this->carrier->max_weight;
+        $shipping->min_weight = 0.0;
+        $shipping->free_shipping = $this->isFreeShipping();
+        $shipping->order = $this->carrier->position;
+        $shipping->is_default = (int)($this->carrier->id == Configuration::get('PS_CARRIER_DEFAULT'));
+        $shipping->pkwiu = '';
+        $shipping->mobile = 1;
+        $shipping->engine = '';
+        $shipping->callback_url = $this->getCallbackUrl();
 
-            'payment.payment_id' => $this->payment->id,
-            'payment.order' => $this->getPaymentOrder(),
-            'payment.name' => $this->payment->name,
-            'payment.title' => $this->payment->displayName,
-            'payment.description' => '', $this->payment->description,
-            'payment.notify_mail' => '',
-            'payment.giftcard' => [
-                'title' => 'GiftCard',
-                'description' => 'Karta podarunkowa',
-                'value' => $this->getGiftCardTotal(),
-                'card_numbers' => $this->getGiftCardInfo(),
-            ],
-        ];
+        $data->shipping = $shipping;
+
+        $status = new stdClass();
+        $status->status_id = $this->order->current_state;
+        $status->default = (int)($this->payment->name == self::PAYMENT_DEFAULT);
+        $status->color = $this->state->color;
+        $status->type = self::STATUS_TYPE;
+        $status->email_change = self::STATUS_EMAIL_CHANGE;
+        $status->order = $this->order->current_state;
+        $status->name = $this->state->name[$this->defaultIdLang];
+
+        $data->status = $status;
+
+        $data->message = $this->getMessage($this->orderStatusInfo['id_order_state'], $this->defaultIdLang);
+
+        $payment = new stdClass();
+        $payment->payment_id = $this->payment->id;
+        $payment->order = $this->getPaymentOrder();
+        $payment->name = $this->payment->name;
+        $payment->title = $this->payment->displayName;
+        $payment->description = $this->payment->description;
+        $payment->notify_mail = '';
+        // GiftCard info
+        $payment->giftcard = new stdClass();
+        $payment->giftcard->title = 'GiftCard';
+        $payment->giftcard->description = 'Karta podarunkowa';
+        $payment->giftcard->value = $this->getGiftCardTotal();
+        $payment->giftcard->card_numbers = $this->getGiftCardInfo();
+
+        $data->payment = $payment;
 
         // products info
-        $this->getProducts($this->order, $data);
+        $data->products = $this->getProducts($this->order);
 
         // set 'discount_code' value
         if (! empty($this->products)) {
             $firstProduct = reset($this->products);
-            $data['discount_code'] = floor($data['product' . (int)$firstProduct['id_product'] . '.id']['discount_perc']);
+            $data->discount_code = floor($data->products[(int)$firstProduct['id_product']]->discount_perc);
         }
 
-        $data['additional_fields'] = [];
+        $data->additional_fields = [];
 
         return $data;
     }
@@ -326,10 +341,11 @@ trait DefaultDataCollectorTrait
                 continue;
             }
 
-            $gcInfo[] = [
-                'nr' => $tmpGiftCard->card_number,
-                'value' => round($singleCart->balance, self::PRECISION),
-            ];
+            $tmpGcInfo = new stdClass();
+            $tmpGcInfo->nr = $tmpGiftCard->card_number;
+            $tmpGcInfo->value = round($singleCart->balance, self::PRECISION);
+
+            $gcInfo[] = $tmpGcInfo;
         }
 
         return $gcInfo;
@@ -378,8 +394,9 @@ trait DefaultDataCollectorTrait
         return round($sum, self::PRECISION);
     }
 
-    protected function getProducts(Order $order, array &$data): void
+    protected function getProducts(Order $order): array
     {
+        $allProducts = [];
         $inOrder = $this->products;
 
         foreach ($inOrder as $p) {
@@ -389,24 +406,29 @@ trait DefaultDataCollectorTrait
                 ? (int)$p['product_attribute_id']
                 : 0;
 
-            $data["product$idProduct.id"] = $idProduct;
-            $data["product$idProduct.order_id"] = $order->reference;
-            $data["product$idProduct.product_id"] = $p['reference'];
-            $data["product$idProduct.stock_id"] = $IdProductAttr;
-            $data["product$idProduct.price"] = $p['product_price_wt'];
-            $data["product$idProduct.discount_perc"] = $this->getProductPercentDiscount($idProduct);
-            $data["product$idProduct.quantity"] = $p['product_quantity'];
-            $data["product$idProduct.delivery_time"] = $this->getDeliveryTime($idProduct);
-            $data["product$idProduct.name"] = $p['product_name'];
-            $data["product$idProduct.code"] = $product->reference;
-            $data["product$idProduct.pkwiu"] = '';
-            $data["product$idProduct.tax"] = $p['tax_name'];
-            $data["product$idProduct.tax_value"] = round($p['product_price_wt'] - $p['product_price'], self::PRECISION);
-            $data["product$idProduct.unit"] = (string)($product->unity);
-            $data["product$idProduct.option"] = $this->getProductOption($IdProductAttr);
-            $data["product$idProduct.unit_fp"] = self::PRODUCT_UNIT_FP;
-            $data["product$idProduct.weight"] = round($p['weight'], self::PRECISION);
+            $prod = new stdClass();
+            $prod->id = $idProduct;
+            $prod->order_id = $order->reference;
+            $prod->product_id = $p['reference'];
+            $prod->stock_id = $IdProductAttr;
+            $prod->price = $p['product_price_wt'];
+            $prod->discount_perc = $this->getProductPercentDiscount($idProduct);
+            $prod->quantity = $p['product_quantity'];
+            $prod->delivery_time = $this->getDeliveryTime($idProduct);
+            $prod->name = $p['product_name'];
+            $prod->code = $product->reference;
+            $prod->pkwiu = '';
+            $prod->tax = $p['tax_name'];
+            $prod->tax_value = round($p['product_price_wt'] - $p['product_price'], self::PRECISION);
+            $prod->unit = (string)($product->unity);
+            $prod->option = $this->getProductOption($IdProductAttr);
+            $prod->unit_fp = self::PRODUCT_UNIT_FP;
+            $prod->weight = round($p['weight'], self::PRECISION);
+
+            $allProducts[$idProduct] = $prod;
         }
+
+        return $allProducts;
     }
 
     protected function getDeliveryDate(): string
@@ -565,6 +587,7 @@ trait DefaultDataCollectorTrait
                 SELECT `id_attribute`
                 FROM `' . _DB_PREFIX_ . 'product_attribute_combination`
                 WHERE `id_product_attribute` = ' . $idAttr . '
+                LIMIT 1
             )';
 
         return (string)(Db::getInstance()->getValue($sql));

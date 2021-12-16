@@ -80,8 +80,9 @@ class WebhookSender
             $this->reqData->url = $this->webhook->url;
             $this->reqData->data_collector = $this->webhook->data_collector;
             $this->reqData->data = json_encode($this->dataCollector->getData());
+            $this->reqData->save();
 
-            if (! $this->reqData->save()) {
+            if (! $this->reqData->id) {
                 throw new \Exception('Could not save GcrRequestData model');
             }
         }

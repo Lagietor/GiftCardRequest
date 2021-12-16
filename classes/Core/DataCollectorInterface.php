@@ -13,6 +13,8 @@
 
 namespace Gcr\Core;
 
+use stdClass;
+
 interface DataCollectorInterface
 {
     public const PRECISION = 2;
@@ -25,6 +27,6 @@ interface DataCollectorInterface
     public const SHIPPING_DEPEND_ON_DEFAULT = 0;
     public const FREE_SHIPPING_MIN_PROD_NB = 4;
 
-    public function getData(): array;
+    public function getData(): stdClass;
     public function getName(): string;
 }

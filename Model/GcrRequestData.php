@@ -109,7 +109,7 @@ class GcrRequestData extends \ObjectModel
         parent::save($null_values, $auto_date);
     }
 
-    public static function getDataForOrderPaid(int $idOrder): array
+    public static function getDataForOrderPaid(int $idOrder): stdClass
     {
         $sql = new DbQuery();
         $sql->select('data')
@@ -119,14 +119,14 @@ class GcrRequestData extends \ObjectModel
 
         $row = Db::getInstance()->getRow($sql);
         if (empty($row)) {
-            return [];
+            return new stdClass();
         }
 
         $decoded = json_decode($row['data']);
         if (empty($decoded)) {
-            return [];
+            return new stdClass();
         }
 
-        return (array)$decoded;
+        return $decoded;
     }
 }

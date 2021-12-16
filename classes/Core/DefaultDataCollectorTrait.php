@@ -31,6 +31,7 @@ use \DateInterval;
 use \Validate;
 use \CartRule;
 use \OrderCarrier;
+use \Cart;
 
 trait DefaultDataCollectorTrait
 {
@@ -72,6 +73,9 @@ trait DefaultDataCollectorTrait
 
     /** @var Module */
     protected $payment;
+
+    /** @var int */
+    protected $idCart;
 
     protected function getOrderStatusInfo(): array
     {
@@ -153,6 +157,11 @@ trait DefaultDataCollectorTrait
         $this->payment = Module::getInstanceById(Module::getModuleIdByName($this->order->module));
         if (! Validate::isLoadedObject($this->payment)) {
             throw new \Exception('Could not load payment Module - Name: ' . $this->order->module);
+        }
+
+        $this->idCart = Cart::getCartIdByOrderId($this->order->id);
+        if (empty($this->idCart)) {
+            throw new \Exception('Could not load Cart - ID order: ' . $this->order->id);
         }
 
         $data = [
@@ -267,6 +276,12 @@ trait DefaultDataCollectorTrait
             'payment.title' => $this->payment->displayName,
             'payment.description' => '', $this->payment->description,
             'payment.notify_mail' => '',
+            'payment.giftcard' => [
+                'title' => 'GiftCard',
+                'description' => 'Karta podarunkowa',
+                'value' => $this->getGiftCardTotal(),
+                'card_numbers' => $this->getGiftCardInfo(),
+            ],
         ];
 
         // products info
@@ -281,6 +296,43 @@ trait DefaultDataCollectorTrait
         $data['additional_fields'] = [];
 
         return $data;
+    }
+
+    protected function getGiftCardTotal(): float
+    {
+        if (! class_exists('CartGiftcard') || ! class_exists('GiftcardModel')) {
+            return 0.0;
+        }
+
+        return round(\CartGiftcard::getTotalDiscounts($this->idCart), self::PRECISION);
+    }
+
+    protected function getGiftCardInfo(): array
+    {
+        $gcInfo = [];
+
+        if (! class_exists('CartGiftcard') || ! class_exists('GiftcardModel')) {
+            return $gcInfo;
+        }
+
+        $cartGiftCards = \CartGiftcard::getByIdCart($this->idCart);
+        if (empty($cartGiftCards)) {
+            return $gcInfo;
+        }
+
+        foreach ($cartGiftCards as $singleCart) {
+            $tmpGiftCard = new \GiftcardModel($singleCart->id_giftcard);
+            if (! Validate::isLoadedObject($tmpGiftCard)) {
+                continue;
+            }
+
+            $gcInfo[] = [
+                'nr' => $tmpGiftCard->card_number,
+                'value' => round($singleCart->balance, self::PRECISION),
+            ];
+        }
+
+        return $gcInfo;
     }
 
     /**

@@ -20,7 +20,8 @@ class WebhookHandler
     /** @var int */
     private $currentState;
 
-    private $idOrder; // zmienna do możliwego wykorzystania w przyszłości
+    /** @var int */
+    private $idOrder;
 
     public function __construct(int $idOrder, int $currentState)
     {

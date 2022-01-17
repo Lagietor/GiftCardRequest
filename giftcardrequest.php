@@ -136,7 +136,7 @@ class GiftCardRequest extends Module
             return $controller->run($params);
         } catch (\Throwable $th) {
             PrestaShopLogger::addLog(
-                $th->getMessage(),
+                $this->name . ' - ' . $th->getMessage(),
                 PrestaShopLogger::LOG_SEVERITY_LEVEL_WARNING
             );
         }

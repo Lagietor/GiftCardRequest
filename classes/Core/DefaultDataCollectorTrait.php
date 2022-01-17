@@ -72,7 +72,7 @@ trait DefaultDataCollectorTrait
     /** @var OrderState */
     protected $state;
 
-    /** @var Module */
+    /** @var Module|stdClass */
     protected $payment;
 
     /** @var int */
@@ -157,7 +157,11 @@ trait DefaultDataCollectorTrait
         }
         $this->payment = Module::getInstanceById(Module::getModuleIdByName($this->order->module));
         if (! Validate::isLoadedObject($this->payment)) {
-            throw new \Exception('Could not load payment Module - Name: ' . $this->order->module);
+            if ($this->order->module === 'free_order') {
+                $this->payment = $this->getFreeOrderPayment();
+            } else {
+                throw new \Exception('Could not load payment Module - Name: ' . $this->order->module);
+            }
         }
 
         $this->idCart = Cart::getCartIdByOrderId($this->order->id);
@@ -311,6 +315,17 @@ trait DefaultDataCollectorTrait
         $data->additional_fields = [];
 
         return $data;
+    }
+
+    protected function getFreeOrderPayment()
+    {
+        $payment = new stdClass();
+        $payment->id = 0;
+        $payment->name = 'free_order';
+        $payment->displayName = 'Free Order';
+        $payment->description = 'Free Order';
+
+        return $payment;
     }
 
     protected function getGiftCardTotal(): float
@@ -498,6 +513,10 @@ trait DefaultDataCollectorTrait
 
         $product = $this->products[$idProduct];
 
+        if ((float)($product['price']) == 0.0) {
+            return 0.0;
+        }
+
         if ((float)$product['reduction_percent']) {
             return round(
                 (float)$product['reduction_percent'],
@@ -516,7 +535,7 @@ trait DefaultDataCollectorTrait
     protected function getPercentDiscountGroup(): float
     {
         $firstProduct = reset($this->products);
-        if (empty($firstProduct)) {
+        if (empty($firstProduct) || (float)$firstProduct['price'] == 0.0) {
             return 0.0;
         }
 

@@ -48,7 +48,7 @@ class AdminGcrWebhookDataController extends ModuleAdminController
                 $resendSuccess = 1;
             } catch (\Throwable $th) {
                 PrestaShopLogger::addLog(
-                    $th->getMessage(),
+                    $this->module->name . ' - ' . $th->getMessage(),
                     PrestaShopLogger::LOG_SEVERITY_LEVEL_WARNING
                 );
             }

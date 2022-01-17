@@ -106,7 +106,7 @@ class GcrRequestData extends \ObjectModel
             $webhook->id . ':' . $webhook->secure_key . ':' . $this->data
         );
 
-        parent::save($null_values, $auto_date);
+        return parent::save($null_values, $auto_date);
     }
 
     public static function getDataForOrderPaid(int $idOrder): stdClass

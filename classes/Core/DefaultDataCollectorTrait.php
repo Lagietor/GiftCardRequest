@@ -114,7 +114,7 @@ trait DefaultDataCollectorTrait
             $this->carrier->getIdTaxRulesGroupByIdCarrier($this->order->id_carrier)
         );
         if (! Validate::isLoadedObject($this->taxRuleGroup)) {
-            throw new \Exception('Could not load TaxRuleGroup - ID Carrierer: ' . $this->order->id_carrier);
+            $this->taxRuleGroup->name = '';
         }
 
         $this->billingAddress = new Address($this->order->id_address_invoice);

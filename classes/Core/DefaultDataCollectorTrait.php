@@ -307,9 +307,8 @@ trait DefaultDataCollectorTrait
         $data->products = $this->getProducts($this->order);
 
         // set 'discount_code' value
-        if (! empty($this->products)) {
-            $firstProduct = reset($this->products);
-            $data->discount_code = floor($data->products[(int)$firstProduct['id_product']]->discount_perc);
+        if (! empty($data->products)) {
+            $data->discount_code = floor($data->products[0]->discount_perc);
         }
 
         $data->additional_fields = [];
@@ -440,7 +439,7 @@ trait DefaultDataCollectorTrait
             $prod->unit_fp = self::PRODUCT_UNIT_FP;
             $prod->weight = round($p['weight'], self::PRECISION);
 
-            $allProducts[$idProduct] = $prod;
+            $allProducts[] = $prod;
         }
 
         return $allProducts;

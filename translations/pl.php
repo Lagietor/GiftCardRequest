@@ -2,7 +2,7 @@
 
 global $_MODULE;
 $_MODULE = array();
-$_MODULE['<{giftcardrequest}prestashop>giftcardrequest_bc32e29e8d32cc4a7266ad3d20d942d9'] = 'GiftCard WebHooks Requests';
+$_MODULE['<{giftcardrequest}prestashop>giftcardrequest_78f851533a44b4ee1ea6b0cd99008aa4'] = 'Moduł webhook';
 $_MODULE['<{giftcardrequest}prestashop>giftcardrequest_c0c542af6dabce4abf36dc0585d47f7c'] = 'Umożliwia wysłanie webhooka ze szczegółami zamówienia';
 $_MODULE['<{giftcardrequest}prestashop>giftcardrequest_bb8956c67b82c7444a80c6b2433dd8b4'] = 'Czy na pewno chcesz odinstalować ten moduł?';
 $_MODULE['<{giftcardrequest}prestashop>giftcardrequest_3a8b8132519810a3b842c7a54d37e418'] = 'WebHooks';

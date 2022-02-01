@@ -170,7 +170,7 @@ trait DefaultDataCollectorTrait
         }
 
         $data = new stdClass();
-        $data->order_id = $this->order->reference;
+        $data->order_id = trim($this->order->reference);
         $data->user_id = $this->customer->id;
         $data->date = $this->order->date_add;
         $data->status_date = $this->orderStatusInfo['date_add'];
@@ -212,7 +212,7 @@ trait DefaultDataCollectorTrait
 
         $billingAddress = new stdClass();
         $billingAddress->address_id = $this->billingAddress->id;
-        $billingAddress->order_id = $this->order->reference;
+        $billingAddress->order_id = trim($this->order->reference);
         $billingAddress->type = 1;
         $billingAddress->firstname = $this->billingAddress->firstname;
         $billingAddress->lastname = $this->billingAddress->lastname;
@@ -234,7 +234,7 @@ trait DefaultDataCollectorTrait
 
         $deliveryAddress = new stdClass();
         $deliveryAddress->address_id = $this->deliveryAddress->id;
-        $deliveryAddress->order_id = $this->order->reference;
+        $deliveryAddress->order_id = trim($this->order->reference);
         $deliveryAddress->type = 2;
         $deliveryAddress->firstname = $this->deliveryAddress->firstname;
         $deliveryAddress->lastname = $this->deliveryAddress->lastname;
@@ -422,7 +422,7 @@ trait DefaultDataCollectorTrait
 
             $prod = new stdClass();
             $prod->id = $idProduct;
-            $prod->order_id = $order->reference;
+            $prod->order_id = trim($order->reference);
             $prod->product_id = $idProduct;
             $prod->stock_id = $IdProductAttr;
             $prod->price = $p['product_price_wt'];
@@ -516,12 +516,12 @@ trait DefaultDataCollectorTrait
             return 0.0;
         }
 
-        if ((float)$product['reduction_percent']) {
+        if ((float)($product['reduction_percent'])) {
             return round(
-                (float)$product['reduction_percent'],
+                (float)($product['reduction_percent']),
                 self::PRECISION
             );
-        } elseif ((float)isset($product['reduction_amount'])) {
+        } elseif ((float)($product['reduction_amount'])) {
             return round(
                 abs((($product['product_price'] / $product['price']) - 1) * 100),
                 self::PRECISION
@@ -538,12 +538,12 @@ trait DefaultDataCollectorTrait
             return 0.0;
         }
 
-        if ((float)$firstProduct['reduction_percent']) {
+        if ((float)($firstProduct['reduction_percent'])) {
             return round(
-                (float)$firstProduct['reduction_percent'],
+                (float)($firstProduct['reduction_percent']),
                 self::PRECISION
             );
-        } elseif ((float)isset($firstProduct['reduction_amount'])) {
+        } elseif ((float)($firstProduct['reduction_amount'])) {
             return round(
                 abs((($firstProduct['product_price'] / $firstProduct['price']) - 1) * 100),
                 self::PRECISION

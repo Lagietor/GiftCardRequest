@@ -35,7 +35,7 @@ class GiftCardRequest extends Module
 
         parent::__construct();
 
-        $this->displayName = $this->l('GiftCard WebHooks Requests');
+        $this->displayName = $this->l('Webhook Module');
         $this->description = $this->l('Sends webhooks with information about the order');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall this module?');
     }

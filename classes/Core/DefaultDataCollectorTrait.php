@@ -423,7 +423,7 @@ trait DefaultDataCollectorTrait
             $prod = new stdClass();
             $prod->id = $idProduct;
             $prod->order_id = $order->reference;
-            $prod->product_id = $p['reference'];
+            $prod->product_id = $idProduct;
             $prod->stock_id = $IdProductAttr;
             $prod->price = $p['product_price_wt'];
             $prod->discount_perc = $this->getProductPercentDiscount($idProduct);
@@ -433,7 +433,7 @@ trait DefaultDataCollectorTrait
             $prod->code = $product->reference;
             $prod->pkwiu = '';
             $prod->tax = $p['tax_name'];
-            $prod->tax_value = round($p['product_price_wt'] - $p['product_price'], self::PRECISION);
+            $prod->tax_value = (int)($p['tax_rate']);
             $prod->unit = (string)($product->unity);
             $prod->option = $this->getProductOption($IdProductAttr);
             $prod->unit_fp = self::PRODUCT_UNIT_FP;

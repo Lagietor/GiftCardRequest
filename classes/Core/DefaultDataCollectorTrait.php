@@ -506,29 +506,21 @@ trait DefaultDataCollectorTrait
 
     protected function getProductPercentDiscount(int $idProduct): float
     {
-        if (! isset($this->products[$idProduct])) {
+        if (! isset($this->products[$idProduct])
+            || $this->order->total_products_wt == 0.0
+        ) {
             return 0.0;
         }
 
-        $product = $this->products[$idProduct];
+        $cartRules = $this->order->getCartRules();
 
-        if ((float)($product['price']) == 0.0) {
+        if (empty($cartRules)) {
             return 0.0;
         }
 
-        if ((float)($product['reduction_percent'])) {
-            return round(
-                (float)($product['reduction_percent']),
-                self::PRECISION
-            );
-        } elseif ((float)($product['reduction_amount'])) {
-            return round(
-                abs((($product['product_price'] / $product['price']) - 1) * 100),
-                self::PRECISION
-            );
-        } else {
-            return 0.0;
-        }
+        $discountSum = array_sum(array_column($cartRules, 'value'));
+
+        return round($discountSum / $this->order->total_products_wt * 100, self::PRECISION);
     }
 
     protected function getPercentDiscountGroup(): float

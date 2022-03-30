@@ -6,7 +6,7 @@
  * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
  *
  * @package   Giftcard
- * @version   1.0.0
+ * @version   1.0.2
  * @copyright Copyright (c) 2021 BonCard Polska Sp. z o.o. (https://www.boncard.pl)
  * @license http://opensource.org/licenses/GPL-3.0 Open Software License (GPL 3.0)
  */
@@ -121,9 +121,9 @@ trait DefaultDataCollectorTrait
         if (! Validate::isLoadedObject($this->billingAddress)) {
             throw new \Exception('Could not load billing Address - ID: ' . $this->order->id_address_invoice);
         }
-        $this->billingCountry = new Country($this->billingAddress->id);
+        $this->billingCountry = new Country($this->billingAddress->id_country);
         if (! Validate::isLoadedObject($this->billingCountry)) {
-            throw new \Exception('Could not load billing Country - ID: ' . $this->billingAddress->id);
+            throw new \Exception('Could not load billing Country - ID: ' . $this->billingAddress->id_country);
         }
         $this->billingState = $this->billingAddress->id_state
             ? new State((int) $this->billingAddress->id_state)
@@ -138,9 +138,9 @@ trait DefaultDataCollectorTrait
         if (! Validate::isLoadedObject($this->deliveryAddress)) {
             throw new \Exception('Could not load delivery Address - ID: ' . $this->order->id_address_delivery);
         }
-        $this->deliveryCountry = new Country($this->deliveryAddress->id);
+        $this->deliveryCountry = new Country($this->deliveryAddress->id_country);
         if (! Validate::isLoadedObject($this->deliveryCountry)) {
-            throw new \Exception('Could not load delivery Country - ID: ' . $this->deliveryAddress->id);
+            throw new \Exception('Could not load delivery Country - ID: ' . $this->deliveryAddress->id_country);
         }
         $this->deliveryState = $this->deliveryAddress->id_state
             ? new State((int) $this->deliveryAddress->id_state)

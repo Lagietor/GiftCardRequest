@@ -6,7 +6,7 @@
  * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
  *
  * @package   Giftcard
- * @version   1.0.0
+ * @version   1.0.2
  * @copyright Copyright (c) 2021 BonCard Polska Sp. z o.o. (https://www.boncard.pl)
  * @license http://opensource.org/licenses/GPL-3.0 Open Software License (GPL 3.0)
  */
@@ -170,5 +170,40 @@ class GcrWebHook extends \ObjectModel
         }
 
         return array_column(\Db::getInstance()->executeS($sql), 'id_giftcardrequest_webhook');
+    }
+
+    public static function getActiveIDs(): array
+    {
+        $sql = new DbQuery();
+        $sql->select(self::$definition['primary'])
+            ->from(self::$definition['table'])
+            ->where('active = 1');
+
+        $result = \Db::getInstance()->executeS($sql);
+
+        return empty($result) ? [] : array_column($result, self::$definition['primary']);
+    }
+
+    public static function getAllQuery(): array
+    {
+        $sql = new \DbQuery();
+        $sql->select(self::$definition['primary'])
+            ->from(self::$definition['table']);
+
+        $results = \Db::getInstance()->executeS($sql);
+
+        if (empty($results)) {
+            return [];
+        }
+
+        $all = [];
+        foreach ($results as $result) {
+            $all[] = [
+                'id_option' => $result[self::$definition['primary']],
+                'name' => $result[self::$definition['primary']],
+            ];
+        }
+
+        return $all;
     }
 }

@@ -6,7 +6,7 @@
  * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
  *
  * @package   Giftcard
- * @version   1.0.0
+ * @version   1.0.2
  * @copyright Copyright (c) 2021 BonCard Polska Sp. z o.o. (https://www.boncard.pl)
  * @license http://opensource.org/licenses/GPL-3.0 Open Software License (GPL 3.0)
  */
@@ -45,11 +45,16 @@ class AdminGcrWebhookController extends ModuleAdminController
     public function initPageHeaderToolbar()
     {
         if (empty($this->display)) {
-            $this->page_header_toolbar_btn['foo'] = [
+            $this->page_header_toolbar_btn['add_webhook'] = [
                 'href' => $this->context->link->getAdminLink('AdminGcrWebhook')
                     . '&addgiftcardrequest_webhook',
                 'desc' => $this->l('Add new webhook'),
                 'icon' => 'process-icon-plus'
+            ];
+            $this->page_header_toolbar_btn['existing'] = [
+                'href' => $this->context->link->getAdminLink('AdminGcrWebhookExisting'),
+                'desc' => $this->l('Resend'),
+                'icon' => 'icon-refresh'
             ];
         }
 

@@ -6,7 +6,7 @@
  * Do not edit or add to this file if you wish to upgrade the to newer versions in the future.
  *
  * @package   Giftcard
- * @version   1.0.0
+ * @version   1.0.2
  * @copyright Copyright (c) 2021 BonCard Polska Sp. z o.o. (https://www.boncard.pl)
  * @license http://opensource.org/licenses/GPL-3.0 Open Software License (GPL 3.0)
  */
@@ -28,7 +28,7 @@ class GiftCardRequest extends Module
     {
         $this->name = 'giftcardrequest';
         $this->tab = 'back_office_features';
-        $this->version = '1.0.0';
+        $this->version = '1.0.2';
         $this->author = 'Giftcard';
         $this->need_instance = 0;
         $this->bootstrap = true;

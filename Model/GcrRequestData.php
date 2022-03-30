@@ -99,7 +99,7 @@ class GcrRequestData extends \ObjectModel
     {
         $webhook = new GcrWebHook($this->id_webhook);
         if (! Validate::isLoadedObject($webhook)) {
-            throw new \Exception('Could not load Webhook - ID: ' . $this->id_webhook);
+            throw new \Exception($this->l('Could not load Webhook - ID: ') . $this->id_webhook);
         }
 
         $this->checksum = sha1(

@@ -117,7 +117,7 @@ class GiftCardRequest extends Module
             $path = __DIR__ . '/controllers/hooks/' . $controllerName . '.php';
 
             if (! file_exists($path)) {
-                throw new \Exception('Hook controller not found: ' . $path);
+                throw new \Exception($this->l('Hook controller not found: ') . $path);
             }
 
             require_once($path);

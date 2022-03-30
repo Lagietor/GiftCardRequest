@@ -54,7 +54,7 @@ class WebhookSender
         );
 
         if (empty($this->webhook->data_collector)) {
-            throw new \Exception('Data collector not found');
+            throw new \Exception($this->l('Data collector not found'));
         }
 
         $this->getReqData();
@@ -82,11 +82,11 @@ class WebhookSender
             $this->reqData->data = json_encode($this->dataCollector->getData());
 
             if (empty($this->reqData->data)) {
-                throw new \Exception('Failed to prepare data for the webhook');
+                throw new \Exception($this->l('Failed to prepare data for the webhook'));
             }
 
             if (! $this->reqData->save()) {
-                throw new \Exception('Could not save GcrRequestData model');
+                throw new \Exception($this->l('Could not save GcrRequestData model'));
             }
         }
     }
@@ -95,8 +95,11 @@ class WebhookSender
     {
         if (! Validate::isLoadedObject($this->reqData)) {
             throw new \Exception(
-                'Could not found GcrRequestData - ID Webhook: ' . $this->webhook->id
-                . ', ID order: ' . $this->idOrder
+                sprintf(
+                    $this->l('Could not found GcrRequestData - ID Webhook: %s, ID order: %s'),
+                    $this->webhook->id,
+                    $this->idOrder
+                )
             );
         }
 

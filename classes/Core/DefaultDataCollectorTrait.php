@@ -102,13 +102,13 @@ trait DefaultDataCollectorTrait
         $this->readProductsFromOrder();
         $this->customer = new Customer($this->order->id_customer);
         if (! Validate::isLoadedObject($this->customer)) {
-            throw new \Exception('Could not load Customer - ID: ' . $this->order->id_customer);
+            throw new \Exception($this->l('Could not load Customer - ID: ') . $this->order->id_customer);
         }
         $this->orderStatusInfo = $this->getOrderStatusInfo();
 
         $this->carrier = new Carrier($this->order->id_carrier);
         if (! Validate::isLoadedObject($this->carrier)) {
-            throw new \Exception('Could not load Carrier - ID: ' . $this->order->id_carrier);
+            throw new \Exception($this->l('Could not load Carrier - ID: ') . $this->order->id_carrier);
         }
         $this->taxRuleGroup = new TaxRulesGroup(
             $this->carrier->getIdTaxRulesGroupByIdCarrier($this->order->id_carrier)
@@ -119,54 +119,54 @@ trait DefaultDataCollectorTrait
 
         $this->billingAddress = new Address($this->order->id_address_invoice);
         if (! Validate::isLoadedObject($this->billingAddress)) {
-            throw new \Exception('Could not load billing Address - ID: ' . $this->order->id_address_invoice);
+            throw new \Exception($this->l('Could not load billing Address - ID: ') . $this->order->id_address_invoice);
         }
         $this->billingCountry = new Country($this->billingAddress->id_country);
         if (! Validate::isLoadedObject($this->billingCountry)) {
-            throw new \Exception('Could not load billing Country - ID: ' . $this->billingAddress->id_country);
+            throw new \Exception($this->l('Could not load billing Country - ID: ') . $this->billingAddress->id_country);
         }
         $this->billingState = $this->billingAddress->id_state
             ? new State((int) $this->billingAddress->id_state)
             : false;
         if ($this->billingState) {
             if (! Validate::isLoadedObject($this->billingState)) {
-                throw new \Exception('Could not load billing Country - ID: ' . $this->billingAddress->id_state);
+                throw new \Exception($this->l('Could not load billing State - ID: ') . $this->billingAddress->id_state);
             }
         }
 
         $this->deliveryAddress = new Address($this->order->id_address_delivery);
         if (! Validate::isLoadedObject($this->deliveryAddress)) {
-            throw new \Exception('Could not load delivery Address - ID: ' . $this->order->id_address_delivery);
+            throw new \Exception($this->l('Could not load delivery Address - ID: ') . $this->order->id_address_delivery);
         }
         $this->deliveryCountry = new Country($this->deliveryAddress->id_country);
         if (! Validate::isLoadedObject($this->deliveryCountry)) {
-            throw new \Exception('Could not load delivery Country - ID: ' . $this->deliveryAddress->id_country);
+            throw new \Exception($this->l('Could not load delivery Country - ID: ') . $this->deliveryAddress->id_country);
         }
         $this->deliveryState = $this->deliveryAddress->id_state
             ? new State((int) $this->deliveryAddress->id_state)
             : false;
         if ($this->deliveryState) {
             if (! Validate::isLoadedObject($this->deliveryState)) {
-                throw new \Exception('Could not load delivery Country - ID: ' . $this->deliveryAddress->id_state);
+                throw new \Exception($this->l('Could not load delivery State - ID: ') . $this->deliveryAddress->id_state);
             }
         }
 
         $this->state = new OrderState($this->order->current_state);
         if (! Validate::isLoadedObject($this->state)) {
-            throw new \Exception('Could not load OrdeState - ID: ' . $this->order->current_state);
+            throw new \Exception($this->l('Could not load OrderState - ID: ') . $this->order->current_state);
         }
         $this->payment = Module::getInstanceById(Module::getModuleIdByName($this->order->module));
         if (! Validate::isLoadedObject($this->payment)) {
             if ($this->order->module === 'free_order') {
                 $this->payment = $this->getFreeOrderPayment();
             } else {
-                throw new \Exception('Could not load payment Module - Name: ' . $this->order->module);
+                throw new \Exception($this->l('Could not load payment Module - Name: ') . $this->order->module);
             }
         }
 
         $this->idCart = Cart::getCartIdByOrderId($this->order->id);
         if (empty($this->idCart)) {
-            throw new \Exception('Could not load Cart - ID order: ' . $this->order->id);
+            throw new \Exception($this->l('Could not load Cart - ID order: ') . $this->order->id);
         }
 
         $data = new stdClass();

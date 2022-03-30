@@ -170,7 +170,7 @@ abstract class DataCollectorBase implements DataCollectorInterface
         }
 
         if (! $templateExists) {
-            throw new \Exception('Could not find template for message');
+            throw new \Exception($this->l('Could not find template for message'));
         }
 
         $templateVars = $this->getDefaultTemplateVars($idLang);

@@ -96,7 +96,7 @@ class AdminGcrWebhookExistingController extends ModuleAdminController
             $orderIds = explode(',', $orderIdsQuery);
 
             if (empty($orderIds)) {
-                throw new \Exception('Order IDs could not be recognized');
+                throw new \Exception($this->l('Order IDs could not be recognized'));
             }
 
             $orderIds = array_filter($orderIds, function($el) {
@@ -106,13 +106,13 @@ class AdminGcrWebhookExistingController extends ModuleAdminController
             $orderIds = array_map('intval', $orderIds);
 
             if (empty($orderIds)) {
-                throw new \Exception('Order IDs could not be recognized');
+                throw new \Exception($this->l('Order IDs could not be recognized'));
             }
 
             $idWebhook = (int)(\Tools::getValue('id_webhook'));
             $webhook = new \GcrWebHook($idWebhook);
             if (! \Validate::isLoadedObject($webhook)) {
-                throw new \Exception('Webhok nt found');
+                throw new \Exception($this->l('Webhok not found'));
             }
 
             foreach ($orderIds as $idOrder) {
